@@ -1,65 +1,103 @@
 #include <iostream>
 #include <fstream>
+#include <sstream>
+#include <vector>
 #include <string>
-#include <unordered_map>
 
 using namespace std;
 
-// Function to read data from a CSV file and store it in an unordered_map
-void readCSV(const string& filename, unordered_map<string, pair<string, string>>& dataMap) {
-    ifstream file(filename);
-    if (!file) {
-        cerr << "Error opening file: " << filename << endl;
-        exit(1);
+class User {
+public:
+    string userId;
+    string username;
+    string password;
+
+    User(const string& uid, const string& uname, const string& pwd)
+        : userId(uid), username(uname), password(pwd) {}
+
+    virtual bool validate(const string& uname, const string& pwd) const {
+        return username == uname && password == pwd;
     }
 
+    virtual ~User() {}
+};
+
+class Manager : public User {
+    // Add manager-specific attributes and methods here if necessary.
+public:
+    Manager(const string& uid, const string& uname, const string& pwd)
+        : User(uid, uname, pwd) {}
+};
+
+class Tenant : public User {
+    // Add tenant-specific attributes and methods here if necessary.
+public:
+    Tenant(const string& uid, const string& uname, const string& pwd)
+        : User(uid, uname, pwd) {}
+};
+
+vector<User*> readUsersFromFile(const string &filename) {
+    ifstream file(filename);
+    vector<User*> users;
     string line, userId, username, password;
+    
+    // Skip the header
+    getline(file, line);
+
     while (getline(file, line)) {
-        size_t commaPos1 = line.find(',');
-        size_t commaPos2 = line.find(',', commaPos1 + 1);
-        if (commaPos1 != string::npos && commaPos2 != string::npos) {
-            userId = line.substr(0, commaPos1);
-            username = line.substr(commaPos1 + 1, commaPos2 - commaPos1 - 1);
-            password = line.substr(commaPos2 + 1);
-            dataMap[username] = make_pair(userId, password);
+        stringstream s(line);
+        getline(s, userId, ',');
+        getline(s, username, ',');
+        getline(s, password, ',');
+
+        if (filename == "admin.csv") {
+            users.push_back(new User(userId, username, password));
+        } else if (filename == "manager.csv") {
+            users.push_back(new Manager(userId, username, password));
+        } else if (filename == "tenant.csv") {
+            users.push_back(new Tenant(userId, username, password));
         }
     }
 
-    file.close();
+    return users;
+}
+
+bool login(const string &username, const string &password, const vector<User*>& users) {
+    for (const auto& user : users) {
+        if (user->validate(username, password)) {
+            return true;
+        }
+    }
+    return false;
 }
 
 int main() {
-    // Initialize data maps for admin, manager, and tenant
-    unordered_map<string, pair<string, string>> adminData;
-    unordered_map<string, pair<string, string>> managerData;
-    unordered_map<string, pair<string, string>> tenantData;
+    vector<User*> admins = readUsersFromFile("admin.csv");
+    vector<User*> managers = readUsersFromFile("manager.csv");
+    vector<User*> tenants = readUsersFromFile("tenant.csv");
 
-    // Read data from respective CSV files
-    readCSV("admin.csv", adminData);
-    readCSV("manager.csv", managerData);
-    readCSV("tenant.csv", tenantData);
-
-    // User login
     string username, password;
-    cout << "Username: ";
+
+    cout << "Enter username: ";
     cin >> username;
-    cout << "Password: ";
+
+    cout << "Enter password: ";
     cin >> password;
 
-    // Check if the user is an admin, manager, or tenant and verify the credentials
-    bool isLoggedIn = false;
-    if (adminData.find(username) != adminData.end() && adminData[username].second == password) {
-        cout << "Admin login successful!" << endl;
-        isLoggedIn = true;
-    } else if (managerData.find(username) != managerData.end() && managerData[username].second == password) {
-        cout << "Manager login successful!" << endl;
-        isLoggedIn = true;
-    } else if (tenantData.find(username) != tenantData.end() && tenantData[username].second == password) {
-        cout << "Tenant login successful!" << endl;
-        isLoggedIn = true;
+    if (login(username, password, admins)) {
+        cout << "Logged in as Admin." << endl;
+    } else if (login(username, password, managers)) {
+        cout << "Logged in as Manager." << endl;
+    } else if (login(username, password, tenants)) {
+        cout << "Logged in as Tenant." << endl;
     } else {
-        cout << "Invalid username or password. Login failed." << endl;
+        cout << "Login failed!" << endl;
     }
+
+    // Clean up dynamically allocated memory
+    for (auto& user : admins) delete user;
+    for (auto& user : managers) delete user;
+    for (auto& user : tenants) delete user;
 
     return 0;
 }
