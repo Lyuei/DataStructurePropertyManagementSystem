@@ -55,11 +55,11 @@ vector<User*> readUsersFromFile(const string &filename) {
         getline(s, username, ',');
         getline(s, password, ',');
 
-        if (filename == "C:\\Users\\leeyu\\Documents\\GitHub\\DataStructurePropertyManagementSystem\\") {
+        if (filename == "admin.csv") {
             users.push_back(new User(userId, username, password));
-        } else if (filename == "C:\\Users\\leeyu\\Documents\\GitHub\\DataStructurePropertyManagementSystem\\manager.csv") {
+        } else if (filename == "manager.csv") {
             users.push_back(new Manager(userId, username, password));
-        } else if (filename == "C:\\Users\\leeyu\\Documents\\GitHub\\DataStructurePropertyManagementSystem\\tenant.csv") {
+        } else if (filename == "tenant.csv") {
             users.push_back(new Tenant(userId, username, password));
         }
     }
@@ -78,8 +78,8 @@ bool login(const string &username, const string &password, const vector<User*>& 
 
 int main() {
     vector<User*> admins = readUsersFromFile("admin.csv");
-    vector<User*> managers = readUsersFromFile("C:\\Users\\leeyu\\Documents\\GitHub\\DataStructurePropertyManagementSystem\\manager.csv");
-    vector<User*> tenants = readUsersFromFile("C:\\Users\\leeyu\\Documents\\GitHub\\DataStructurePropertyManagementSystem\\tenant.csv");
+    vector<User*> managers = readUsersFromFile("manager.csv");
+    vector<User*> tenants = readUsersFromFile("tenant.csv");
 
     string username, password;
 
