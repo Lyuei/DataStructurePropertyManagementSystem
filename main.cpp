@@ -1,50 +1,27 @@
+#include "user_types.h"
 #include <iostream>
 #include <fstream>
 #include <sstream>
-#include <vector>
-#include <string>
 
 using namespace std;
 
-class User {
-public:
-    string userId;
-    string username;
-    string password;
+User::User(const string& uid, const string& uname, const string& pwd)
+    : userId(uid), username(uname), password(pwd) {}
 
-    User(const string& uid, const string& uname, const string& pwd)
-        : userId(uid), username(uname), password(pwd) {}
+bool User::validate(const string& uname, const string& pwd) const {
+    return username == uname && password == pwd;
+}
 
-    virtual bool validate(const string& uname, const string& pwd) const {
-        return username == uname && password == pwd;
-    }
+Manager::Manager(const string& uid, const string& uname, const string& pwd)
+    : User(uid, uname, pwd) {}
 
-    virtual ~User() {}
-};
-
-class Manager : public User {
-    // Add manager-specific attributes and methods here if necessary.
-public:
-    Manager(const string& uid, const string& uname, const string& pwd)
-        : User(uid, uname, pwd) {}
-};
-
-class Tenant : public User {
-    // Add tenant-specific attributes and methods here if necessary.
-public:
-    Tenant(const string& uid, const string& uname, const string& pwd)
-        : User(uid, uname, pwd) {}
-};
+Tenant::Tenant(const string& uid, const string& uname, const string& pwd)
+    : User(uid, uname, pwd) {}
 
 vector<User*> readUsersFromFile(const string &filename) {
     ifstream file(filename);
     vector<User*> users;
     string line, userId, username, password;
-    
-        if (!file.is_open()) {  // Check if the file was successfully opened
-        cerr << "Failed to open the file: " << filename << endl;
-        exit(EXIT_FAILURE);  // Exit the program with an error code
-    }
 
     // Skip the header
     getline(file, line);
