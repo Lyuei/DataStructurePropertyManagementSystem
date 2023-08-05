@@ -1,7 +1,6 @@
 #include <fstream>
 #include <sstream>
 #include "CSVReader.hpp"
-#include "User.hpp"
 
 void readAdmins(LinkedList &list)
 {
