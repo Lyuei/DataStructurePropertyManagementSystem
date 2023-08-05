@@ -1,2 +1,2 @@
-﻿userId,username,password
-11,manager,manager
+﻿userId,username,password,status
+11,manager,manager,FALSE

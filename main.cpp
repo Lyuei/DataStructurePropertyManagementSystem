@@ -1,62 +1,84 @@
 #include "user_types.h"
+#include "manager.h"
 #include <iostream>
 #include <fstream>
 #include <sstream>
 
 using namespace std;
 
-User::User(const string& uid, const string& uname, const string& pwd)
-    : userId(uid), username(uname), password(pwd) {}
-
-bool User::validate(const string& uname, const string& pwd) const {
-    return username == uname && password == pwd;
+// Destructor to delete linked list
+UserManager::~UserManager() {
+    // ...
 }
 
-Manager::Manager(const string& uid, const string& uname, const string& pwd)
-    : User(uid, uname, pwd) {}
-
-Tenant::Tenant(const string& uid, const string& uname, const string& pwd)
-    : User(uid, uname, pwd) {}
-
-vector<User*> readUsersFromFile(const string &filename) {
+void UserManager::readUsersFromFile(const string& filename, const string& userType) {
     ifstream file(filename);
-    vector<User*> users;
-    string line, userId, username, password;
-
-    // Skip the header
-    getline(file, line);
+    // Skip BOM
+    file.ignore(3);
+    string line, userId, username, password, name, statusStr;
+    int age;
+    bool status;
 
     while (getline(file, line)) {
-        stringstream s(line);
-        getline(s, userId, ',');
-        getline(s, username, ',');
-        getline(s, password, ',');
-
-        if (filename == "admin.csv") {
-            users.push_back(new User(userId, username, password));
-        } else if (filename == "manager.csv") {
-            users.push_back(new Manager(userId, username, password));
-        } else if (filename == "tenant.csv") {
-            users.push_back(new Tenant(userId, username, password));
+        stringstream ss(line);
+        getline(ss, userId, ',');
+        getline(ss, username, ',');
+        getline(ss, password, ',');
+        
+        if (userType == "manager") {
+            getline(ss, statusStr, ',');
+            insertAtBeginning(userId, username, password, status);
+        } else if (userType == "tenant") {
+            getline(ss, name, ',');
+            ss >> age; // Assuming age is the last value on the line
+            insertAtBeginning(userId, username, password, false, name, age);
+        } else {
+            insertAtBeginning(userId, username, password);
         }
     }
 
-    return users;
+    file.close();
 }
 
-bool login(const string &username, const string &password, const vector<User*>& users) {
-    for (const auto& user : users) {
-        if (user->validate(username, password)) {
+bool UserManager::login(const string& username, const string& password) {
+    User *temp = head;
+    while (temp != nullptr) {
+        if (temp->username == username && temp->password == password) {
             return true;
         }
+        temp = temp->next;
     }
     return false;
 }
 
+void UserManager::insertAtBeginning(const string& userId, const string& username, const string& password, bool status, const string& name, int age) {
+    User *newUser;
+    if (!name.empty()) {
+        Tenant *tenant = new Tenant;
+        tenant->name = name;
+        tenant->age = age;
+        newUser = tenant;
+    } else if (status) {
+        Manager *manager = new Manager;
+        manager->status = status;
+        newUser = manager;
+    } else {
+        newUser = new User;
+    }
+
+    newUser->userId = userId;
+    newUser->username = username;
+    newUser->password = password;
+    newUser->next = head;
+    head = newUser;
+}
+
 int main() {
-    vector<User*> admins = readUsersFromFile("admin.csv");
-    vector<User*> managers = readUsersFromFile("manager.csv");
-    vector<User*> tenants = readUsersFromFile("tenant.csv");
+    UserManager admins, managers, tenants;
+
+    admins.readUsersFromFile("admin.csv", "admin");
+    managers.readUsersFromFile("manager.csv", "manager");
+    tenants.readUsersFromFile("tenant.csv", "tenant");
 
     string username, password;
 
@@ -66,20 +88,16 @@ int main() {
     cout << "Enter password: ";
     cin >> password;
 
-    if (login(username, password, admins)) {
+    if (admins.login(username, password)) {
         cout << "Logged in as Admin." << endl;
-    } else if (login(username, password, managers)) {
+    } else if (managers.login(username, password)) {
         cout << "Logged in as Manager." << endl;
-    } else if (login(username, password, tenants)) {
+        managerMenu();
+    } else if (tenants.login(username, password)) {
         cout << "Logged in as Tenant." << endl;
     } else {
         cout << "Login failed!" << endl;
     }
-
-    // Clean up dynamically allocated memory
-    for (auto& user : admins) delete user;
-    for (auto& user : managers) delete user;
-    for (auto& user : tenants) delete user;
 
     return 0;
 }

@@ -9,19 +9,33 @@ struct User {
     string userId;
     string username;
     string password;
+    User *next;
 
-    User(const string& uid, const string& uname, const string& pwd);
-    virtual bool validate(const string& uname, const string& pwd) const;
-    virtual ~User() {}
+    User() : next(nullptr) {}
+    virtual ~User() {} // Virtual destructor
 };
 
 struct Manager : public User {
-    Manager(const string& uid, const string& uname, const string& pwd);
+    bool status;
+
+    Manager() : status(false) {}
 };
 
 struct Tenant : public User {
-    Tenant(const string& uid, const string& uname, const string& pwd);
+    string name;
+    int age;
+
+    Tenant() : name(""), age(0) {}
 };
 
-vector<User*> readUsersFromFile(const string &filename);
-bool login(const string &username, const string &password, const vector<User*>& users);
+class UserManager {
+private:
+    User *head;
+
+public:
+    UserManager() : head(nullptr) {}
+    ~UserManager(); // Destructor to delete linked list
+    void readUsersFromFile(const string& filename, const string& userType);
+    bool login(const string& username, const string& password);
+    void insertAtBeginning(const string& userId, const string& username, const string& password, bool status = false, const string& name = "", int age = 0);
+};
