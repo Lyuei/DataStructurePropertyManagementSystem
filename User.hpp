@@ -12,26 +12,17 @@ public:
     string userId;
     string username;
     string password;
-    User(string userId, string username, string password)
-        : userId(userId), username(username), password(password) {}
-    virtual ~User() {} // Virtual destructor
-    virtual void display() const
-    {
-        cout << "User ID: " << userId << ", Username: " << username << "\n";
-    }
+    User(string userId, string username, string password);
+    virtual ~User(); // Virtual destructor
+    virtual void display() const;
 };
 
 // Derived admin class
 class Admin : public User
 {
 public:
-    Admin(string userId, string username, string password)
-        : User(userId, username, password) {}
-    void display() const override
-    {
-        cout << "Admin: ";
-        User::display();
-    }
+    Admin(string userId, string username, string password);
+    void display() const override;
 };
 
 // Derived manager class
@@ -39,14 +30,8 @@ class Manager : public User
 {
 public:
     bool status;
-    Manager(string userId, string username, string password, bool status)
-        : User(userId, username, password), status(status) {}
-    void display() const override
-    {
-        cout << "Manager: ";
-        User::display();
-        cout << "Status: " << (status ? "Active" : "Inactive") << "\n";
-    }
+    Manager(string userId, string username, string password, bool status);
+    void display() const override;
 };
 
 // Derived tenant class
@@ -55,12 +40,6 @@ class Tenant : public User
 public:
     string name;
     int age;
-    Tenant(string userId, string username, string password, string name, int age)
-        : User(userId, username, password), name(name), age(age) {}
-    void display() const override
-    {
-        cout << "Tenant: ";
-        User::display();
-        cout << "Name: " << name << ", Age: " << age << "\n";
-    }
+    Tenant(string userId, string username, string password, string name, int age);
+    void display() const override;
 };
