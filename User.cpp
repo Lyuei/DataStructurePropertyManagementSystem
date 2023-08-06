@@ -1,5 +1,8 @@
-#include "User.hpp"
+#include "LinkedList.hpp"
 #include "CSVReader.hpp"
+#include <chrono>
+#include <algorithm>
+#include <vector>
 
 User::User(string userId, string username, string password)
     : userId(userId), username(username), password(password) {}
@@ -28,6 +31,44 @@ void Manager::display() const
     cout << "Manager: " << endl;
     User::display();
     cout << "Status: " << (status ? "Active" : "Inactive") << "\n";
+}
+
+void Manager::displaySortedTenants(LinkedList &tenantList)
+{
+    // Get the current date
+    auto now = chrono::system_clock::now();
+    time_t now_time_t = chrono::system_clock::to_time_t(now);
+
+    // Convert the tenant list to a vector
+    vector<Tenant *> tenants = tenantList.to_vector();
+    vector<User *> users(tenants.begin(), tenants.end());
+
+    // Sort the vector by last login date
+    sort(users.begin(), users.end(), [](User *a, User *b)
+         {
+        Tenant* tenantA = dynamic_cast<Tenant*>(a);
+        Tenant* tenantB = dynamic_cast<Tenant*>(b);
+        if (tenantA != nullptr && tenantB != nullptr) {
+            return difftime(mktime(&(tenantA->lastLogin)), mktime(&(tenantB->lastLogin))) < 0;
+        }
+        return false; });
+
+    // Display the sorted tenants
+    for (User *user : users)
+    {
+        Tenant *tenant = dynamic_cast<Tenant *>(user);
+        if (tenant != nullptr)
+        {
+            tenant->display();
+
+            // Calculate and display the number of days since the last login
+            time_t lastLogin_time_t = mktime(&tenant->lastLogin);
+            chrono::system_clock::time_point now_time_point = chrono::system_clock::from_time_t(now_time_t);
+            chrono::system_clock::time_point lastLogin_time_point = chrono::system_clock::from_time_t(lastLogin_time_t);
+            chrono::duration<int, std::ratio<60 * 60 * 24>> days_since_last_login = chrono::duration_cast<chrono::duration<int, std::ratio<60 * 60 * 24>>>(now_time_point - lastLogin_time_point);
+            cout << "Days since last login: " << days_since_last_login.count() << "\n";
+        }
+    }
 }
 
 void Manager::managerMenu()
@@ -60,6 +101,8 @@ void Manager::managerMenu()
             // Call function to search tenant details
             break;
         case 3:
+            // Iterate over the list of tenants
+            displaySortedTenants(tenantList);
             cout << "Enter the sacrificial User ID of the tenant you wish to obliterate, or 'cancel' to backtrack: ";
             cin >> userIdToDelete;
             if (userIdToDelete == "cancel")
