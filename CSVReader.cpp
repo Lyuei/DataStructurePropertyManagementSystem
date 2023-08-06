@@ -1,5 +1,6 @@
 #include <fstream>
 #include <sstream>
+#include <iomanip>
 #include "CSVReader.hpp"
 
 void readAdmins(LinkedList &list)
@@ -43,12 +44,40 @@ void readTenants(LinkedList &list)
     while (getline(file, line))
     {
         istringstream ss(line);
-        string userId, username, password, name, age;
+        string userId, username, password, name, ageStr, lastLoginStr;
         getline(ss, userId, ',');
         getline(ss, username, ',');
         getline(ss, password, ',');
         getline(ss, name, ',');
-        getline(ss, age, ',');
-        list.insert(new Tenant(userId, username, password, name, stoi(age)));
+        getline(ss, ageStr, ',');
+        getline(ss, lastLoginStr, ',');
+
+        istringstream dateStream(lastLoginStr);
+        tm lastLogin = {};
+        dateStream >> get_time(&lastLogin, "%d-%m-%Y");
+
+        list.insert(new Tenant(userId, username, password, name, stoi(ageStr), lastLogin));
     }
+}
+
+void deleteTenantFromFile(const string& filename, const string& userIdToDelete) {
+    ifstream inFile(filename);
+    ofstream outFile("csv_files/temp.csv");
+
+    string line;
+    while (getline(inFile, line)) {
+        istringstream ss(line);
+        string userId;
+        getline(ss, userId, ',');  // assuming userId is the first field in the CSV line
+
+        if (userId != userIdToDelete) {
+            outFile << line << "\n";
+        }
+    }
+
+    inFile.close();
+    outFile.close();
+
+    remove(filename.c_str());
+    rename("csv_files/temp.csv", filename.c_str());
 }
