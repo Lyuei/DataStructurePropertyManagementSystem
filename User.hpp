@@ -32,6 +32,7 @@ public:
     bool status;
     Manager(string userId, string username, string password, bool status);
     void display() const override;
+    void managerMenu();
 };
 
 // Derived tenant class
@@ -40,6 +41,7 @@ class Tenant : public User
 public:
     string name;
     int age;
-    Tenant(string userId, string username, string password, string name, int age);
+    tm lastLogin;
+    Tenant(string userId, string username, string password, string name, int age,tm lastLogin);
     void display() const override;
 };

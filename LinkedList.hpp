@@ -22,5 +22,4 @@ public:
     void deleteNode(string userId);
     User *login(string username, string password);
     void display() const; 
-    // Other linked list methods...
 };
