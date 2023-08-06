@@ -5,6 +5,8 @@
 
 using namespace std;
 
+class LinkedList;  // Forward declaration
+
 // Base user class
 class User
 {
@@ -32,7 +34,8 @@ public:
     bool status;
     Manager(string userId, string username, string password, bool status);
     void display() const override;
-    void managerMenu();
+    void managerMenu();    
+    void displaySortedTenants(LinkedList& tenantList);
 };
 
 // Derived tenant class

@@ -52,7 +52,6 @@ int main()
     cin >> username;
     cout << "Enter password: ";
     cin >> password;
-    cout << "And now, let the spectacle begin as we unravel the mysteries of maintenance and unravel tenant tales.";
 
     // Try to login
     User *user = login(username, password, adminList, managerList, tenantList, manager);
