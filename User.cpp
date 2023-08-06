@@ -16,7 +16,7 @@ Admin::Admin(string userId, string username, string password)
 
 void Admin::display() const
 {
-    cout << "Admin: "<< endl;
+    cout << "Admin: " << endl;
     User::display();
 }
 
@@ -25,7 +25,7 @@ Manager::Manager(string userId, string username, string password, bool status)
 
 void Manager::display() const
 {
-    cout << "Manager: "<< endl;
+    cout << "Manager: " << endl;
     User::display();
     cout << "Status: " << (status ? "Active" : "Inactive") << "\n";
 }
@@ -33,30 +33,47 @@ void Manager::display() const
 void Manager::managerMenu()
 {
     int choice;
+    string userIdToDelete;
     LinkedList tenantList;
+    readTenants(tenantList);
     do
     {
-        cout << "\nManager Menu: \n";
-        cout << "1. Display all registered tenant details\n";
-        cout << "2. Search tenant’s details\n";
-        cout << "3. Delete tenant accounts based on inactivity status\n";
-        cout << "4. Generate report on top 10 properties\n";
-        cout << "5. Manage tenancy process upon renting request received\n";
-        cout << "6. Manage payment of the confirmed tenancy\n";
+        cout << "\nManager's Realm: \n";
+        cout << "1. Unveil the Details of Registered Tenants\n";
+        cout << "2. Embark on a Quest for Tenant Info\n";
+        cout << "3. Banish Inactive Tenants into the Abyss\n";
+        cout << "4. Summon the Legends of Top 10 Properties\n";
+        cout << "5. Dive into the Dance of Tenancy Process\n";
+        cout << "6. Tame the Wild Beast of Confirmed Payments\n";
         cout << "7. Logout\n";
-        cout << "Enter your choice: ";
+        cout << "Enter Your Command: ";
+
         cin >> choice;
 
         switch (choice)
         {
         case 1:
-            readTenants(tenantList);
             tenantList.display();
             break;
         case 2:
+
             // Call function to search tenant details
             break;
         case 3:
+            cout << "Enter the sacrificial User ID of the tenant you wish to obliterate, or 'cancel' to backtrack: ";
+            cin >> userIdToDelete;
+            if (userIdToDelete == "cancel")
+            {
+                cout << "Deletion ritual aborted – their digital existence lives on.\n";
+            }
+            else
+            {
+                // Let the darkness consume the tenant, wiping them from the list and the scrolls
+                tenantList.remove(userIdToDelete);
+                deleteTenantFromFile("csv_files/tenant.csv", userIdToDelete);
+                cout << "Tenant bearing User ID " << userIdToDelete << " has been vanquished from our realms.\n";
+            }
+
             // Call function to delete tenant accounts
             break;
         case 4:
@@ -69,10 +86,10 @@ void Manager::managerMenu()
             // Call function to manage payment
             break;
         case 7:
-            cout << "Logging out...\n";
+            cout << "Commencing the art of logout...\n";
             break;
         default:
-            cout << "Invalid choice. Please enter a number between 1 and 7.\n";
+            cout << "Ah, the land of indecision! Enter a realm between 1 and 7, mortal.\n";
         }
     } while (choice != 7);
 }
@@ -82,7 +99,7 @@ Tenant::Tenant(string userId, string username, string password, string name, int
 
 void Tenant::display() const
 {
-    cout << "Tenant: "<< endl;
+    cout << "Tenant: " << endl;
     User::display();
     cout << "Name: " << name
          << ", Age: " << age

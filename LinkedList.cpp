@@ -32,3 +32,25 @@ void LinkedList::display() const {
         current = current->next;
     }
 }
+
+void LinkedList::remove(string userId) {
+    Node* current = head;
+    Node* previous = NULL;
+
+    while (current != NULL) {
+        if (current->data->userId == userId) {
+            // Found the node to delete
+            if (previous == NULL) {
+                // The node to delete is the head of the list
+                head = current->next;
+            } else {
+                // The node to delete is in the middle or end of the list
+                previous->next = current->next;
+            }
+            delete current;
+            return;
+        }
+        previous = current;
+        current = current->next;
+    }
+}
