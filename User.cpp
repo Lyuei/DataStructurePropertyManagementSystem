@@ -111,13 +111,11 @@ void Manager::managerMenu()
             }
             else
             {
-                // Let the darkness consume the tenant, wiping them from the list and the scrolls
+                // Delete tenant from linked list and csv file
                 tenantList.remove(userIdToDelete);
                 deleteTenantFromFile("csv_files/tenant.csv", userIdToDelete);
                 cout << "Tenant bearing User ID " << userIdToDelete << " has been vanquished from our realms.\n";
             }
-
-            // Call function to delete tenant accounts
             break;
         case 4:
             // Call function to generate report
@@ -148,3 +146,55 @@ void Tenant::display() const
          << ", Age: " << age
          << ", Last Login: " << (lastLogin.tm_year + 1900) << "-" << (lastLogin.tm_mon + 1) << "-" << lastLogin.tm_mday << "\n";
 }
+
+// void Tenant::tenantMenu()
+// {
+//     int choice;
+//     string propertyId;
+//     LinkedList propertyList;
+//     // Assuming readProperties is a function that reads property data into propertyList
+//     // readProperties(propertyList);
+
+//     do
+//     {
+//         cout << "\nTenant's Realm: \n";
+//         cout << "1. Explore the Property Collection\n";
+//         cout << "2. Sort Properties\n";
+//         cout << "3. Embark on the Property Hunt\n";
+//         cout << "4. Show Love to a Property (Save as Favorite)\n";
+//         cout << "5. Initiate Rent Request\n";
+//         cout << "6. Witness Renting Chronicles\n";
+//         cout << "7. Logout\n";
+//         cout << "Enter Your Command: ";
+
+//         cin >> choice;
+
+//         switch (choice)
+//         {
+//         case 1:
+//             // propertyList.display();
+//             break;
+//         case 2:
+//             // Call function to sort properties
+//             break;
+//         case 3:
+//             // Call function to search property
+//             break;
+//         case 4:
+//             // Call function to save favorite property
+//             break;
+//         case 5:
+//             // Call function to place rent request
+//             break;
+//         case 6:
+//             // Call function to display renting history
+//             break;
+//         case 7:
+//             cout << "Logging out...\n";
+//             break;
+//         default:
+//             cout << "Ah, the land of indecision! Enter a realm between 1 and 7, mortal.\n";
+//         }
+//     } while (choice != 7);
+// }
+
