@@ -14,7 +14,6 @@ public:
     string username;
     string password;
     User(string userId, string username, string password);
-    virtual ~User(); // Virtual destructor
     virtual void display() const;
 };
 

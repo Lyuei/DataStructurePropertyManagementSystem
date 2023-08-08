@@ -7,8 +7,6 @@
 User::User(string userId, string username, string password)
     : userId(userId), username(username), password(password) {}
 
-User::~User() {}
-
 void User::display() const
 {
     cout << "User ID: " << userId << ", Username: " << username << "\n";
@@ -81,7 +79,6 @@ void Manager::managerMenu()
     string choice;
     string userIdToDelete;
     LinkedList tenantList;
-    readTenants(tenantList);
     do
     {
         cout << "\nManager's Realm: \n";
@@ -117,7 +114,6 @@ void Manager::managerMenu()
             {
                 // Delete tenant from linked list and csv file
                 tenantList.remove(userIdToDelete);
-                deleteTenantFromFile("csv_files/tenant.csv", userIdToDelete);
                 cout << "Tenant bearing User ID " << userIdToDelete << " has been vanquished from our realms.\n";
             }
         }
@@ -232,7 +228,6 @@ void Tenant::tenantMenu()
 
         if (choice == "1")
         {
-            propertyList.sortList();
             cout << "Enter the number of rows to display: ";
             while (!(cin >> numRows))
             {
@@ -240,23 +235,20 @@ void Tenant::tenantMenu()
                 cin.clear();                                         // Clear the error flags
                 cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Discard invalid input
             }
+            propertyList.sort_by_criterion(SortCriteria::MonthlyRent);
             propertyList.display(numRows);
         }
         else if (choice == "2")
         {
-            // Call function to sort properties
         }
         else if (choice == "3")
         {
-            // Call function to search property
         }
         else if (choice == "4")
         {
-            // Call function to save favorite property
         }
         else if (choice == "5")
         {
-            // Call function to place rent request
         }
         else if (choice == "6")
         {

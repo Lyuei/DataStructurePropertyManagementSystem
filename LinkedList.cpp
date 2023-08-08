@@ -2,13 +2,27 @@
 #include <algorithm>
 #include <iostream>
 
-void LinkedList::insert(User *user)
-{
+void LinkedList::insert(User *user) {
     Node *newNode = new Node();
     newNode->data = user;
-    newNode->next = head;
-    head = newNode;
+    newNode->next = NULL;
+
+    // If the linked list is empty, make the new node the head
+    if (head == NULL) {
+        head = newNode;
+        return;
+    }
+
+    // Traverse the linked list to find the last node
+    Node *current = head;
+    while (current->next != NULL) {
+        current = current->next;
+    }
+
+    // Insert the new node at the end
+    current->next = newNode;
 }
+
 
 User* LinkedList::login(string username, string password) {
     Node* current = head;

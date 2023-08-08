@@ -36,28 +36,25 @@ User *login(const string &username, const string &password, LinkedList &adminLis
 int main()
 {
     Manager manager("userId", "username", "password", true);
-
-    tm lastLogin = {0};
-    lastLogin.tm_year = 100; // 2000
-    lastLogin.tm_mon = 0;    // January
-    lastLogin.tm_mday = 1;   // 1st day of the month
-
-    Tenant tenant("userId", "username", "password", "Test Tenant", 30, lastLogin);
+    Tenant tenant("userId", "username", "password", "Test Tenant", 30, {0, 0, 0, 1, 0, 100});
 
     LinkedList adminList;
-    readAdmins(adminList);
+    Admin *newAdmin = new Admin("1", "admin", "admin");
+    adminList.insert(newAdmin);
 
     LinkedList managerList;
-    readManagers(managerList);
+    Manager *newManager = new Manager("11", "manager", "manager", 1);
+    managerList.insert(newManager);
 
     LinkedList tenantList;
-    readTenants(tenantList);
+    Tenant *newTenant = new Tenant("11", "tenant", "tenant", "yuwei", 21, {0, 0, 0, 1, 0, 100});
+    tenantList.insert(newTenant);
 
     // Get username and password from user
     string username, password;
     do
     {
-        cout << "Step right into the property management circus, where leaky faucets compose our symphony, elusive pests perform acrobatics, and tenant requests are our daily dose of comedy." << endl;
+        cout << "\nStep right into the property management circus, where leaky faucets compose our symphony, elusive pests perform acrobatics, and tenant requests are our daily dose of comedy." << endl;
         cout << "Enter username: ";
         cin >> username;
         cout << "Enter password: ";
@@ -65,5 +62,5 @@ int main()
 
         // Try to login
         User *user = login(username, password, adminList, managerList, tenantList, manager, tenant);
-    }while (true);
+    } while (true);
 }

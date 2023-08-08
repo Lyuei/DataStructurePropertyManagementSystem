@@ -38,10 +38,10 @@ void Property::display() const
 void PropertyLinkedList::insertAtEnd(Property *data)
 {
     // The next property should be null, as this will be the last property in the list
-    data->next = NULL;
+    data->next = nullptr;
 
     // If the list is empty, the head and tail should both be the new property
-    if (head == NULL)
+    if (head == nullptr)
     {
         head = data;
         tail = data;
@@ -78,74 +78,84 @@ PropertyLinkedList::~PropertyLinkedList()
     }
 }
 
-Property* PropertyLinkedList::getMiddle(Property *head)
-{
-    if (!head)
-    {
-        return head;
+Property* merge_sorted_lists_enum(Property* left, Property* right, SortCriteria criterion) {
+    // Create a dummy node to hold the merged list
+    Property dummy("", "", 0, 0, "", "", 0, 0, 0, 0, "", {}, {}, "");
+    Property* current = &dummy;
+
+    while (left && right) {
+        switch (criterion) {
+            case SortCriteria::MonthlyRent:
+                if (left->monthly_rent >= right->monthly_rent) {
+                    current->next = left;
+                    left = left->next;
+                } else {
+                    current->next = right;
+                    right = right->next;
+                }
+                break;
+
+            case SortCriteria::Location:
+                if (left->location >= right->location) {
+                    current->next = left;
+                    left = left->next;
+                } else {
+                    current->next = right;
+                    right = right->next;
+                }
+                break;
+
+            case SortCriteria::Size:
+                if (left->size >= right->size) {
+                    current->next = left;
+                    left = left->next;
+                } else {
+                    current->next = right;
+                    right = right->next;
+                }
+                break;
+        }
+
+        current = current->next;
     }
 
-    Property *slow = head;
-    Property *fast = head->next;
+    // Attach remaining nodes, if any
+    if (left) current->next = left;
+    if (right) current->next = right;
 
-    while (fast && fast->next)
-    {
-        slow = slow->next;
+    return dummy.next;
+}
+
+pair<Property*, Property*> split_linked_list(Property* head) {
+    if (!head || !head->next) return {head, nullptr};
+
+    Property *slow = head, *fast = head, *prev = nullptr;
+    while (fast && fast->next) {
         fast = fast->next->next;
+        prev = slow;
+        slow = slow->next;
     }
 
-    return slow;
+    if (prev) prev->next = nullptr;
+
+    return {head, slow};
 }
 
-Property* PropertyLinkedList::merge(Property *a, Property *b)
-{
-    Property *result = nullptr;
+Property* merge_sort_linked_list(Property* head, SortCriteria criterion) {
+    if (!head || !head->next) return head;
 
-    if (!a)
-    {
-        return b;
-    }
-    if (!b)
-    {
-        return a;
-    }
+    // Split the linked list into two halves
+    auto [left, right] = split_linked_list(head);
 
-    if (a->monthly_rent > b->monthly_rent ||
-        (a->monthly_rent == b->monthly_rent && a->location > b->location) ||
-        (a->monthly_rent == b->monthly_rent && a->location == b->location && a->size > b->size))
-    {
-        result = a;
-        result->next = merge(a->next, b);
-    }
-    else
-    {
-        result = b;
-        result->next = merge(a, b->next);
-    }
+    // Recursively sort the two halves
+    left = merge_sort_linked_list(left, criterion);
+    right = merge_sort_linked_list(right, criterion);
 
-    return result;
+    // Merge the sorted halves
+    return merge_sorted_lists_enum(left, right, criterion);
 }
 
-Property* PropertyLinkedList::mergeSort(Property *head)
-{
-    if (!head || !head->next)
-    {
-        return head;
-    }
-
-    Property *middle = getMiddle(head);
-    Property *nextOfMiddle = middle->next;
-
-    middle->next = nullptr;
-
-    Property *left = mergeSort(head);
-    Property *right = mergeSort(nextOfMiddle);
-
-    Property *sortedList = merge(left, right);
-    return sortedList;
-}
-
-void PropertyLinkedList::sortList() {
-    head = mergeSort(head);
+void PropertyLinkedList::sort_by_criterion(SortCriteria criterion) {
+    head = merge_sort_linked_list(head, criterion);
 }
 
