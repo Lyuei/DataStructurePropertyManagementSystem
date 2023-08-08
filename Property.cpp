@@ -155,7 +155,96 @@ Property* merge_sort_linked_list(Property* head, SortCriteria criterion) {
     return merge_sorted_lists_enum(left, right, criterion);
 }
 
-void PropertyLinkedList::sort_by_criterion(SortCriteria criterion) {
+void PropertyLinkedList::mergeSortByCriterion(SortCriteria criterion) {
     head = merge_sort_linked_list(head, criterion);
 }
 
+// Helper function to get the tail (last node) of the linked list
+Property* getTail(Property* curr) {
+    while (curr != nullptr && curr->next != nullptr) {
+        curr = curr->next;
+    }
+    return curr;
+}
+
+// Partition the list using the last node as the pivot
+Property* partition(Property* head, Property* end, Property*& newHead, Property*& newEnd, SortCriteria criterion) {
+    Property* pivot = end;
+    Property* prev = nullptr, *cur = head;
+    Property* tail = pivot;
+
+    // Initialize newHead and newEnd to pivot
+    newHead = newEnd = pivot;
+
+    while (cur != pivot) {
+        bool condition = false;
+        
+        // Determine the sort condition based on the criterion
+        switch (criterion) {
+            case SortCriteria::MonthlyRent:
+                condition = (cur->monthly_rent <= pivot->monthly_rent);
+                break;
+            // case SortCriteria::SquareFeet: // Hypothetical criterion for demonstration
+            //     condition = (cur->square_feet <= pivot->square_feet);
+            //     break;
+            // ... add other criteria as needed
+        }
+        
+        if (condition) {
+            // If the current node is smaller or equal to the pivot
+            if (newHead == pivot) {
+                newHead = cur;
+            }
+            prev = cur; 
+            cur = cur->next;
+        } else {
+            // If the current node is larger than the pivot
+            if (prev) {
+                prev->next = cur->next;
+            }
+            Property* tmp = cur->next;
+            cur->next = nullptr;
+            tail->next = cur;
+            tail = cur; // Update the tail
+            cur = tmp;
+        }
+    }
+
+    // Update the newEnd to the current tail after partitioning
+    newEnd = tail;
+
+    return pivot;
+}
+
+// Recursive quick sort function
+Property* quickSortRecur(Property* head, Property* end, SortCriteria criterion) {
+    if (!head || head == end) {
+        return head;
+    }
+
+    Property* newHead = nullptr;
+    Property* newEnd = nullptr;
+
+    Property* pivot = partition(head, end, newHead, newEnd, criterion);
+
+    if (newHead != pivot) {
+        Property* tmp = newHead;
+        while (tmp->next != pivot) {
+            tmp = tmp->next;
+        }
+        tmp->next = nullptr;
+
+        newHead = quickSortRecur(newHead, tmp, criterion);
+        tmp = getTail(newHead);
+        tmp->next = pivot;
+    }
+
+    pivot->next = quickSortRecur(pivot->next, newEnd, criterion);
+
+    return newHead;
+}
+
+// Main quick sort function
+void PropertyLinkedList::quickSortByCriterion(SortCriteria criterion) {
+    head = quickSortRecur(head, getTail(head), criterion);
+}
