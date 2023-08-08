@@ -54,27 +54,26 @@ void Manager::displaySortedTenants(LinkedList &tenantList)
         return false; });
 
     // Display the sorted tenants
-for (User *user : users)
-{
-    Tenant *tenant = dynamic_cast<Tenant *>(user);
-    if (tenant != nullptr)
+    for (User *user : users)
     {
-        tenant->display();
+        Tenant *tenant = dynamic_cast<Tenant *>(user);
+        if (tenant != nullptr)
+        {
+            tenant->display();
 
-        // Calculate and display the number of days since the last login
-        time_t lastLogin_time_t = mktime(&tenant->lastLogin);
-        chrono::system_clock::time_point now_time_point = chrono::system_clock::from_time_t(now_time_t);
-        chrono::system_clock::time_point lastLogin_time_point = chrono::system_clock::from_time_t(lastLogin_time_t);
-        chrono::duration<int, std::ratio<60 * 60 * 24>> days_since_last_login = chrono::duration_cast<chrono::duration<int, std::ratio<60 * 60 * 24>>>(now_time_point - lastLogin_time_point);
-        
-        // Format last login date as dd-mm-yyyy
-        char lastLoginDate[11];
-        strftime(lastLoginDate, sizeof(lastLoginDate), "%d-%m-%Y", &tenant->lastLogin);
-        
-        cout << "Last login: " << lastLoginDate << ", Days since last login: " << days_since_last_login.count() << "\n";
+            // Calculate and display the number of days since the last login
+            time_t lastLogin_time_t = mktime(&tenant->lastLogin);
+            chrono::system_clock::time_point now_time_point = chrono::system_clock::from_time_t(now_time_t);
+            chrono::system_clock::time_point lastLogin_time_point = chrono::system_clock::from_time_t(lastLogin_time_t);
+            chrono::duration<int, std::ratio<60 * 60 * 24>> days_since_last_login = chrono::duration_cast<chrono::duration<int, std::ratio<60 * 60 * 24>>>(now_time_point - lastLogin_time_point);
+
+            // Format last login date as dd-mm-yyyy
+            char lastLoginDate[11];
+            strftime(lastLoginDate, sizeof(lastLoginDate), "%d-%m-%Y", &tenant->lastLogin);
+
+            cout << "Last login: " << lastLoginDate << ", Days since last login: " << days_since_last_login.count() << "\n";
+        }
     }
-}
-
 }
 
 void Manager::managerMenu()
@@ -145,7 +144,7 @@ void Manager::managerMenu()
     } while (choice != "7");
 }
 
-void Manager::searchTenantInfo(LinkedList& list)
+void Manager::searchTenantInfo(LinkedList &list)
 {
     int criteriaChoice;
     cout << "\nChoose a criteria to search by: \n";
@@ -198,7 +197,6 @@ void Manager::searchTenantInfo(LinkedList& list)
     }
 }
 
-
 Tenant::Tenant(string userId, string username, string password, string name, int age, tm lastLogin)
     : User(userId, username, password), name(name), age(age), lastLogin(lastLogin) {}
 
@@ -213,7 +211,8 @@ void Tenant::display() const
 
 void Tenant::tenantMenu()
 {
-    string choice; 
+    string choice;
+    int numRows;
     PropertyLinkedList propertyList;
     readProperties(propertyList);
 
@@ -226,13 +225,22 @@ void Tenant::tenantMenu()
         cout << "4. Send forth your rent request like a virtual carrier pigeon\n";
         cout << "5. Trace the path of property history through the annals of time\n";
         cout << "6. Logout\n";
-        cout << "Your Move, O' Inhabitant. " << endl << "Choose Wisely:";
+        cout << "Your Move, O' Inhabitant. " << endl
+             << "Choose Wisely:";
 
         cin >> choice;
 
         if (choice == "1")
         {
-            propertyList.display();
+            propertyList.sortList();
+            cout << "Enter the number of rows to display: ";
+            while (!(cin >> numRows))
+            {
+                cout << "Invalid input. Please enter a number: ";
+                cin.clear();                                         // Clear the error flags
+                cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Discard invalid input
+            }
+            propertyList.display(numRows);
         }
         else if (choice == "2")
         {
@@ -255,8 +263,8 @@ void Tenant::tenantMenu()
             cout << "Escaping...\n";
         }
         else
-        {            
+        {
             cout << "Ah, the land of indecision! Enter a realm between 1 and 6, mortal.\n";
         }
-    } while (choice != "6");  // This condition should check against a string
+    } while (choice != "6"); // This condition should check against a string
 }

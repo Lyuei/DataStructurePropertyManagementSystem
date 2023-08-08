@@ -54,13 +54,15 @@ void PropertyLinkedList::insertAtEnd(Property *data)
     }
 }
 
-void PropertyLinkedList::display() const
+void PropertyLinkedList::display(int numRows) const
 {
     Property *current = head;
-    while (current != nullptr)
+    int count = 0;
+    while (current != nullptr && count < numRows)
     {
         current->display();
         current = current->next;
+        count++;
     }
 }
 
@@ -74,5 +76,76 @@ PropertyLinkedList::~PropertyLinkedList()
         delete current;
         current = next;
     }
+}
+
+Property* PropertyLinkedList::getMiddle(Property *head)
+{
+    if (!head)
+    {
+        return head;
+    }
+
+    Property *slow = head;
+    Property *fast = head->next;
+
+    while (fast && fast->next)
+    {
+        slow = slow->next;
+        fast = fast->next->next;
+    }
+
+    return slow;
+}
+
+Property* PropertyLinkedList::merge(Property *a, Property *b)
+{
+    Property *result = nullptr;
+
+    if (!a)
+    {
+        return b;
+    }
+    if (!b)
+    {
+        return a;
+    }
+
+    if (a->monthly_rent > b->monthly_rent ||
+        (a->monthly_rent == b->monthly_rent && a->location > b->location) ||
+        (a->monthly_rent == b->monthly_rent && a->location == b->location && a->size > b->size))
+    {
+        result = a;
+        result->next = merge(a->next, b);
+    }
+    else
+    {
+        result = b;
+        result->next = merge(a, b->next);
+    }
+
+    return result;
+}
+
+Property* PropertyLinkedList::mergeSort(Property *head)
+{
+    if (!head || !head->next)
+    {
+        return head;
+    }
+
+    Property *middle = getMiddle(head);
+    Property *nextOfMiddle = middle->next;
+
+    middle->next = nullptr;
+
+    Property *left = mergeSort(head);
+    Property *right = mergeSort(nextOfMiddle);
+
+    Property *sortedList = merge(left, right);
+    return sortedList;
+}
+
+void PropertyLinkedList::sortList() {
+    head = mergeSort(head);
 }
 

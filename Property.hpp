@@ -31,13 +31,17 @@ public:
 
 class PropertyLinkedList
 {
-private:
-    Property *head;
-    Property *tail;
-
 public:
     PropertyLinkedList() : head(nullptr), tail(nullptr) {}
     ~PropertyLinkedList();
     void insertAtEnd(Property *data);
-    void display() const;
+    void display(int numRows) const;
+    Property *mergeSort(Property *head);
+    void sortList();
+
+private:
+    Property *head;
+    Property *tail;
+    Property *getMiddle(Property *head);
+    Property *merge(Property *a, Property *b);
 };
