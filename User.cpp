@@ -235,7 +235,8 @@ void Tenant::tenantMenu()
                 cin.clear();                                         // Clear the error flags
                 cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Discard invalid input
             }
-            propertyList.sort_by_criterion(SortCriteria::MonthlyRent);
+            // propertyList.mergeSortByCriterion(SortCriteria::MonthlyRent);
+            propertyList.quickSortByCriterion(SortCriteria::MonthlyRent);
             propertyList.display(numRows);
         }
         else if (choice == "2")

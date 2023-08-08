@@ -51,5 +51,6 @@ public:
 
     void insertAtEnd(Property *newProperty);
     void display(int numProperties) const;
-    void sort_by_criterion(SortCriteria criterion);
+    void mergeSortByCriterion(SortCriteria criterion);
+    void quickSortByCriterion(SortCriteria criterion);
 };
