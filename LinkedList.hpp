@@ -21,11 +21,15 @@ public:
     Node *begin() { return head; }
     Node *end() { return nullptr; }
     void insert(User *user);
-    User *search(string userId);
-    void deleteNode(string userId);
+    // User *search(string userId);
+    // void deleteNode(string userId);
     User *login(string username, string password);
     void display() const;
     void remove(string userId);
+    void searchTenantByUserId(string userId);
+    void searchTenantByName(const string& searchCriterion);
+    void searchTenantByAge(int age);
+    void searchTenantByLastLogin(tm lastLogin);
 
     vector<Tenant *> to_vector() const
     {
@@ -43,3 +47,4 @@ public:
         return vec;
     }
 };
+

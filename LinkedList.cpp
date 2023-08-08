@@ -1,4 +1,6 @@
 #include "LinkedList.hpp"
+#include <algorithm>
+#include <iostream>
 
 void LinkedList::insert(User *user)
 {
@@ -54,3 +56,93 @@ void LinkedList::remove(string userId) {
         current = current->next;
     }
 }
+
+void LinkedList::searchTenantByUserId(string userId) {
+    Node* current = head;
+    bool tenantFound = false;
+    while (current != NULL) {
+        Tenant* tenant = dynamic_cast<Tenant*>(current->data);
+        if (tenant != NULL) {
+            // Search the userId field for the searchCriterion
+            if (tenant->userId == userId) {
+                tenant->display();
+                tenantFound = true;
+            }
+        }
+        current = current->next;
+    }
+    if (!tenantFound) {
+        cout << "It appears we've stumbled into a tenant-less desert with your criteria. Time to broaden the horizons!\n";
+    }
+}
+
+void LinkedList::searchTenantByName(const string& searchCriterion) {
+    Node* current = head;
+    bool tenantFound = false;
+
+    // Convert the search criterion to lowercase
+    string searchCriterionLower = searchCriterion;
+    transform(searchCriterionLower.begin(), searchCriterionLower.end(), searchCriterionLower.begin(), ::tolower);
+
+    while (current != NULL) {
+        Tenant* tenant = dynamic_cast<Tenant*>(current->data);
+        if (tenant != NULL) {
+            // Convert the tenant's name to lowercase
+            string tenantNameLower = tenant->name;
+            transform(tenantNameLower.begin(), tenantNameLower.end(), tenantNameLower.begin(), ::tolower);
+
+            // Search the name field for the searchCriterion
+            if (tenantNameLower.find(searchCriterionLower) != std::string::npos) {
+                tenant->display();
+                tenantFound = true;
+            }
+        }
+        current = current->next;
+    }
+    if (!tenantFound) {
+        cout << "It appears we've stumbled into a tenant-less desert with your criteria. Time to broaden the horizons!\n";
+    }
+}
+
+
+void LinkedList::searchTenantByAge(int age) {
+    Node* current = head;
+    bool tenantFound = false;
+    while (current != NULL) {
+        Tenant* tenant = dynamic_cast<Tenant*>(current->data);
+        if (tenant != NULL) {
+            // Compare the age field to the search criterion
+            if (tenant->age == age) {
+                tenant->display();
+                tenantFound = true;
+            }
+        }
+        current = current->next;
+    }
+    if (!tenantFound) {
+        cout << "It appears we've stumbled into a tenant-less desert with your criteria. Time to broaden the horizons!\n";
+    }
+}
+
+void LinkedList::searchTenantByLastLogin(tm lastLogin) {
+    Node* current = head;
+    bool tenantFound = false;
+    while (current != NULL) {
+        Tenant* tenant = dynamic_cast<Tenant*>(current->data);
+        if (tenant != NULL) {
+            // Compare the lastLogin field to the search criterion
+            // Note: this is a simple equality check, you might want to implement a more complex comparison
+            if (tenant->lastLogin.tm_year == lastLogin.tm_year && 
+                tenant->lastLogin.tm_mon == lastLogin.tm_mon && 
+                tenant->lastLogin.tm_mday == lastLogin.tm_mday) {
+                tenant->display();
+                tenantFound = true;
+            }
+        }
+        current = current->next;
+    }
+    if (!tenantFound) {
+        cout << "It appears we've stumbled into a tenant-less desert with your criteria. Time to broaden the horizons!\n";
+    }
+}
+
