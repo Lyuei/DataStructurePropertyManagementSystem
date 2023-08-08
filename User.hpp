@@ -1,7 +1,6 @@
 #pragma once
 
 #include <string>
-#include <iostream>
 
 using namespace std;
 
@@ -35,7 +34,8 @@ public:
     Manager(string userId, string username, string password, bool status);
     void display() const override;
     void managerMenu();    
-    void displaySortedTenants(LinkedList& tenantList);
+    void displaySortedTenants(LinkedList& list);
+    void searchTenantInfo(LinkedList& list);
 };
 
 // Derived tenant class
@@ -47,4 +47,5 @@ public:
     tm lastLogin;
     Tenant(string userId, string username, string password, string name, int age,tm lastLogin);
     void display() const override;
+    void tenantMenu();
 };

@@ -3,7 +3,7 @@
 
 using namespace std;
 
-User *login(const string &username, const string &password, LinkedList &adminList, LinkedList &managerList, LinkedList &tenantList, Manager &manager)
+User *login(const string &username, const string &password, LinkedList &adminList, LinkedList &managerList, LinkedList &tenantList, Manager &manager, Tenant &tenant)
 {
     User *user = adminList.login(username, password);
     if (user != NULL)
@@ -24,6 +24,7 @@ User *login(const string &username, const string &password, LinkedList &adminLis
     if (user != NULL)
     {
         cout << "Saddle up for the wild ride through the world of renting – where the walls have stories, and the carpet has seen things. Welcome, " << user->username << "!\n";
+        tenant.tenantMenu();
         return user;
     }
 
@@ -36,6 +37,13 @@ int main()
 {
     Manager manager("userId", "username", "password", true);
 
+    tm lastLogin = {0};
+    lastLogin.tm_year = 100; // 2000
+    lastLogin.tm_mon = 0;    // January
+    lastLogin.tm_mday = 1;   // 1st day of the month
+
+    Tenant tenant("userId", "username", "password", "Test Tenant", 30, lastLogin);
+
     LinkedList adminList;
     readAdmins(adminList);
 
@@ -47,12 +55,15 @@ int main()
 
     // Get username and password from user
     string username, password;
-    cout << "Step right into the property management circus, where leaky faucets compose our symphony, elusive pests perform acrobatics, and tenant requests are our daily dose of comedy." << endl;
-    cout << "Enter username: ";
-    cin >> username;
-    cout << "Enter password: ";
-    cin >> password;
+    do
+    {
+        cout << "Step right into the property management circus, where leaky faucets compose our symphony, elusive pests perform acrobatics, and tenant requests are our daily dose of comedy." << endl;
+        cout << "Enter username: ";
+        cin >> username;
+        cout << "Enter password: ";
+        cin >> password;
 
-    // Try to login
-    User *user = login(username, password, adminList, managerList, tenantList, manager);
+        // Try to login
+        User *user = login(username, password, adminList, managerList, tenantList, manager, tenant);
+    }while (true);
 }
