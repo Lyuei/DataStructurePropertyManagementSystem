@@ -1,5 +1,6 @@
 #include "property.hpp"
 #include <iostream>
+#include <chrono>
 
 Property::Property(string ads_id, string prop_name, int completion_year, int monthly_rent, string location,
                    string property_type, int rooms, int parking, int bathroom, int size, string furnished,
@@ -78,71 +79,91 @@ PropertyLinkedList::~PropertyLinkedList()
     }
 }
 
-Property* merge_sorted_lists_enum(Property* left, Property* right, SortCriteria criterion) {
+Property *merge_sorted_lists_enum(Property *left, Property *right, SortCriteria criterion)
+{
     // Create a dummy node to hold the merged list
     Property dummy("", "", 0, 0, "", "", 0, 0, 0, 0, "", {}, {}, "");
-    Property* current = &dummy;
+    Property *current = &dummy;
 
-    while (left && right) {
-        switch (criterion) {
-            case SortCriteria::MonthlyRent:
-                if (left->monthly_rent >= right->monthly_rent) {
-                    current->next = left;
-                    left = left->next;
-                } else {
-                    current->next = right;
-                    right = right->next;
-                }
-                break;
+    while (left && right)
+    {
+        switch (criterion)
+        {
+        case SortCriteria::MonthlyRent:
+            if (left->monthly_rent >= right->monthly_rent)
+            {
+                current->next = left;
+                left = left->next;
+            }
+            else
+            {
+                current->next = right;
+                right = right->next;
+            }
+            break;
 
-            case SortCriteria::Location:
-                if (left->location >= right->location) {
-                    current->next = left;
-                    left = left->next;
-                } else {
-                    current->next = right;
-                    right = right->next;
-                }
-                break;
+        case SortCriteria::Location:
+            if (left->location >= right->location)
+            {
+                current->next = left;
+                left = left->next;
+            }
+            else
+            {
+                current->next = right;
+                right = right->next;
+            }
+            break;
 
-            case SortCriteria::Size:
-                if (left->size >= right->size) {
-                    current->next = left;
-                    left = left->next;
-                } else {
-                    current->next = right;
-                    right = right->next;
-                }
-                break;
+        case SortCriteria::Size:
+            if (left->size >= right->size)
+            {
+                current->next = left;
+                left = left->next;
+            }
+            else
+            {
+                current->next = right;
+                right = right->next;
+            }
+            break;
         }
 
         current = current->next;
     }
 
     // Attach remaining nodes, if any
-    if (left) current->next = left;
-    if (right) current->next = right;
+    if (left)
+        current->next = left;
+    if (right)
+        current->next = right;
 
     return dummy.next;
 }
 
-pair<Property*, Property*> split_linked_list(Property* head) {
-    if (!head || !head->next) return {head, nullptr};
+pair<Property *, Property *> split_linked_list(Property *head)
+{
+    if (!head || !head->next)
+        return {head, nullptr};
 
     Property *slow = head, *fast = head, *prev = nullptr;
-    while (fast && fast->next) {
+    while (fast && fast->next)
+    {
         fast = fast->next->next;
         prev = slow;
         slow = slow->next;
     }
 
-    if (prev) prev->next = nullptr;
+    if (prev)
+        prev->next = nullptr;
 
     return {head, slow};
 }
 
-Property* merge_sort_linked_list(Property* head, SortCriteria criterion) {
-    if (!head || !head->next) return head;
+Property *merge_sort_linked_list(Property *head, SortCriteria criterion)
+{
+    if (!head || !head->next)
+        return head;
 
     // Split the linked list into two halves
     auto [left, right] = split_linked_list(head);
@@ -155,54 +176,79 @@ Property* merge_sort_linked_list(Property* head, SortCriteria criterion) {
     return merge_sorted_lists_enum(left, right, criterion);
 }
 
-void PropertyLinkedList::mergeSortByCriterion(SortCriteria criterion) {
+void PropertyLinkedList::mergeSortByCriterion(SortCriteria criterion)
+{
+    auto start = chrono::high_resolution_clock::now();
     head = merge_sort_linked_list(head, criterion);
+    auto stop = chrono::high_resolution_clock::now();
+    auto duration = chrono::duration_cast<chrono::microseconds>(stop - start);
+    cout << "Time taken by Merge Sort: " << duration.count() / 1000000.0 << " seconds" << endl;
 }
 
 // Helper function to get the tail (last node) of the linked list
-Property* getTail(Property* curr) {
-    while (curr != nullptr && curr->next != nullptr) {
+Property *getTail(Property *curr)
+{
+    while (curr != nullptr && curr->next != nullptr)
+    {
         curr = curr->next;
     }
     return curr;
 }
 
 // Partition the list using the last node as the pivot
-Property* partition(Property* head, Property* end, Property*& newHead, Property*& newEnd, SortCriteria criterion) {
-    Property* pivot = end;
-    Property* prev = nullptr, *cur = head;
-    Property* tail = pivot;
+Property *partition(Property *head, Property *end, Property *&newHead, Property *&newEnd, SortCriteria criterion)
+{
+    if (end == nullptr) {
+        // Handle the case where the end pointer is null
+        return nullptr;
+    }
+
+    Property *pivot = end;
+    Property *prev = nullptr, *cur = head;
+    Property *tail = pivot;
 
     // Initialize newHead and newEnd to pivot
     newHead = newEnd = pivot;
 
-    while (cur != pivot) {
+    while (cur != pivot)
+    {
         bool condition = false;
-        
+
         // Determine the sort condition based on the criterion
-        switch (criterion) {
-            case SortCriteria::MonthlyRent:
-                condition = (cur->monthly_rent <= pivot->monthly_rent);
-                break;
-            // case SortCriteria::SquareFeet: // Hypothetical criterion for demonstration
-            //     condition = (cur->square_feet <= pivot->square_feet);
-            //     break;
-            // ... add other criteria as needed
+        switch (criterion)
+        {
+        case SortCriteria::MonthlyRent:
+            condition = (cur->monthly_rent >= pivot->monthly_rent);
+            break;
+        case SortCriteria::Location:
+            condition = (cur->location >= pivot->location); // Modified to compare location
+            break;
+        case SortCriteria::Size:
+            condition = (cur->size >= pivot->size); // Modified to compare size
+            break;
+        default:
+            // Handle unexpected criterion value
+            return nullptr;
         }
-        
-        if (condition) {
+
+        if (condition)
+        {
             // If the current node is smaller or equal to the pivot
-            if (newHead == pivot) {
+            if (newHead == pivot)
+            {
                 newHead = cur;
             }
-            prev = cur; 
+            prev = cur;
             cur = cur->next;
-        } else {
+        }
+        else
+        {
             // If the current node is larger than the pivot
-            if (prev) {
+            if (prev)
+            {
                 prev->next = cur->next;
             }
-            Property* tmp = cur->next;
+            Property *tmp = cur->next;
             cur->next = nullptr;
             tail->next = cur;
             tail = cur; // Update the tail
@@ -217,19 +263,23 @@ Property* partition(Property* head, Property* end, Property*& newHead, Property*
 }
 
 // Recursive quick sort function
-Property* quickSortRecur(Property* head, Property* end, SortCriteria criterion) {
-    if (!head || head == end) {
+Property *quickSortRecur(Property *head, Property *end, SortCriteria criterion)
+{
+    if (!head || head == end)
+    {
         return head;
     }
 
-    Property* newHead = nullptr;
-    Property* newEnd = nullptr;
+    Property *newHead = nullptr;
+    Property *newEnd = nullptr;
 
-    Property* pivot = partition(head, end, newHead, newEnd, criterion);
+    Property *pivot = partition(head, end, newHead, newEnd, criterion);
 
-    if (newHead != pivot) {
-        Property* tmp = newHead;
-        while (tmp->next != pivot) {
+    if (newHead != pivot)
+    {
+        Property *tmp = newHead;
+        while (tmp->next != pivot)
+        {
             tmp = tmp->next;
         }
         tmp->next = nullptr;
@@ -245,6 +295,14 @@ Property* quickSortRecur(Property* head, Property* end, SortCriteria criterion) 
 }
 
 // Main quick sort function
-void PropertyLinkedList::quickSortByCriterion(SortCriteria criterion) {
+
+void PropertyLinkedList::quickSortByCriterion(SortCriteria criterion)
+{
+    auto start = chrono::high_resolution_clock::now();
+
     head = quickSortRecur(head, getTail(head), criterion);
+
+    auto stop = chrono::high_resolution_clock::now();
+    auto duration = chrono::duration_cast<chrono::microseconds>(stop - start);
+    cout << "Time taken by Quick Sort: " << duration.count() / 1000000.0 << " seconds" << endl;
 }

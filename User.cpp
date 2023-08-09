@@ -4,6 +4,8 @@
 #include <algorithm>
 #include <vector>
 
+using namespace chrono;
+
 User::User(string userId, string username, string password)
     : userId(userId), username(username), password(password) {}
 
@@ -21,6 +23,36 @@ void Admin::display() const
     User::display();
 }
 
+void Admin::adminMenu(LinkedList &tenantList, LinkedList &managerList)
+{
+    string choice;
+    do
+    {
+        cout << "1. Breathe life into the Manager Realm: Forge a new overseer or alter their fate\n";
+        cout << "2. Unveil the Chronicles of Tenants and Properties with the power of filtering\n";
+        cout << "3. Retreat from this digital dominion – Logout for now\n";
+        cout << "Enter your command wisely: ";
+
+        cin >> choice;
+
+        if (choice == "1")
+        {
+            managerList.display();
+        }
+        else if (choice == "2")
+        {
+        }
+else if (choice == "3")
+{
+    cout << "Initiating the sacred ritual of logout...\n";
+}
+else
+{
+    cout << "Ah, the realm of confusion! Enter a domain between 1 and 3, oh mighty administrator.\n";
+        }
+    } while (choice != "3");
+}
+
 Manager::Manager(string userId, string username, string password, bool status)
     : User(userId, username, password), status(status) {}
 
@@ -34,8 +66,8 @@ void Manager::display() const
 void Manager::displaySortedTenants(LinkedList &tenantList)
 {
     // Get the current date
-    auto now = chrono::system_clock::now();
-    time_t now_time_t = chrono::system_clock::to_time_t(now);
+    auto now = system_clock::now();
+    time_t now_time_t = system_clock::to_time_t(now);
 
     // Convert the tenant list to a vector
     vector<Tenant *> tenants = tenantList.to_vector();
@@ -61,9 +93,9 @@ void Manager::displaySortedTenants(LinkedList &tenantList)
 
             // Calculate and display the number of days since the last login
             time_t lastLogin_time_t = mktime(&tenant->lastLogin);
-            chrono::system_clock::time_point now_time_point = chrono::system_clock::from_time_t(now_time_t);
-            chrono::system_clock::time_point lastLogin_time_point = chrono::system_clock::from_time_t(lastLogin_time_t);
-            chrono::duration<int, std::ratio<60 * 60 * 24>> days_since_last_login = chrono::duration_cast<chrono::duration<int, std::ratio<60 * 60 * 24>>>(now_time_point - lastLogin_time_point);
+            system_clock::time_point now_time_point = system_clock::from_time_t(now_time_t);
+            system_clock::time_point lastLogin_time_point = system_clock::from_time_t(lastLogin_time_t);
+            duration<int, std::ratio<60 * 60 * 24>> days_since_last_login = duration_cast<duration<int, std::ratio<60 * 60 * 24>>>(now_time_point - lastLogin_time_point);
 
             // Format last login date as dd-mm-yyyy
             char lastLoginDate[11];
@@ -228,6 +260,31 @@ void Tenant::tenantMenu()
 
         if (choice == "1")
         {
+            int sortChoice;
+            cout << "Choose a sorting criterion:" << endl;
+            cout << "1. Monthly Rent" << endl;
+            cout << "2. Location" << endl;
+            cout << "3. Size" << endl;
+            cout << "Enter your choice (1/2/3): ";
+            cin >> sortChoice;
+
+            switch (sortChoice)
+            {
+            case 1:
+                // propertyList.mergeSortByCriterion(SortCriteria::MonthlyRent);
+                propertyList.quickSortByCriterion(SortCriteria::MonthlyRent);
+                break;
+            case 2:
+                propertyList.mergeSortByCriterion(SortCriteria::Location);
+                // propertyList.quickSortByCriterion(SortCriteria::Location);
+                break;
+            case 3:
+                propertyList.mergeSortByCriterion(SortCriteria::Size);
+                // propertyList.quickSortByCriterion(SortCriteria::Size);
+                break;
+            default:
+                cout << "Invalid choice." << endl;
+            }
             cout << "Enter the number of rows to display: ";
             while (!(cin >> numRows))
             {
@@ -235,8 +292,6 @@ void Tenant::tenantMenu()
                 cin.clear();                                         // Clear the error flags
                 cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Discard invalid input
             }
-            // propertyList.mergeSortByCriterion(SortCriteria::MonthlyRent);
-            propertyList.quickSortByCriterion(SortCriteria::MonthlyRent);
             propertyList.display(numRows);
         }
         else if (choice == "2")
