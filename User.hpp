@@ -23,6 +23,7 @@ class Admin : public User
 public:
     Admin(string userId, string username, string password);
     void display() const override;
+    void adminMenu(LinkedList &tenantList, LinkedList &managerList);
 };
 
 // Derived manager class

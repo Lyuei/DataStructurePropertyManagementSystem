@@ -3,12 +3,13 @@
 
 using namespace std;
 
-User *login(const string &username, const string &password, LinkedList &adminList, LinkedList &managerList, LinkedList &tenantList, Manager &manager, Tenant &tenant)
+User *login(const string &username, const string &password, LinkedList &adminList, LinkedList &managerList, LinkedList &tenantList, Admin &admin, Manager &manager, Tenant &tenant)
 {
     User *user = adminList.login(username, password);
     if (user != NULL)
     {
         cout << "Let the grand spectacle of control and regulation unfold! Welcome, " << user->username << "!\n";
+        admin.adminMenu(tenantList, managerList);
         return user;
     }
 
@@ -35,6 +36,8 @@ User *login(const string &username, const string &password, LinkedList &adminLis
 
 int main()
 {
+    // Initialise User Object
+    Admin admin("userId", "username", "password");
     Manager manager("userId", "username", "password", true);
     Tenant tenant("userId", "username", "password", "Test Tenant", 30, {0, 0, 0, 1, 0, 100});
 
@@ -61,6 +64,6 @@ int main()
         cin >> password;
 
         // Try to login
-        User *user = login(username, password, adminList, managerList, tenantList, manager, tenant);
+        User *user = login(username, password, adminList, managerList, tenantList, admin, manager, tenant);
     } while (true);
 }
