@@ -27,9 +27,12 @@ public:
     void display() const;
     void remove(string userId);
     void searchTenantByUserId(string userId);
+    void searchManagerByUserId(string userId);
     void searchTenantByName(const string& searchCriterion);
     void searchTenantByAge(int age);
     void searchTenantByLastLogin(tm lastLogin);
+    void setManagerStatusByUserId(string userId);
+    void setStatus(bool newStatus);
 
     vector<Tenant *> to_vector() const
     {

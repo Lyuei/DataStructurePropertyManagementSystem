@@ -28,27 +28,65 @@ void Admin::adminMenu(LinkedList &tenantList, LinkedList &managerList)
     string choice;
     do
     {
-        cout << "1. Breathe life into the Manager Realm: Forge a new overseer or alter their fate\n";
+        cout << "\n1. Breathe life into the Manager Realm: Forge a new overseer or alter their fate\n";
         cout << "2. Unveil the Chronicles of Tenants and Properties with the power of filtering\n";
         cout << "3. Retreat from this digital dominion – Logout for now\n";
         cout << "Enter your command wisely: ";
 
         cin >> choice;
-
         if (choice == "1")
         {
-            managerList.display();
+            string managerChoice;
+            cout << "\n1. Add new manager\n";
+            cout << "2. Modify manager status\n";
+            cout << "3. Back\n";
+
+            cin >> managerChoice;
+
+            if (managerChoice == "1")
+            {
+                managerList.display();
+                string userId;
+                string username;
+                string password;
+                // Assuming you want to take inputs for the userId, username, and password
+                cout << "Enter Manager's User ID: ";
+                cin >> userId;
+                cout << "Enter Manager's Username: ";
+                cin >> username;
+                cout << "Enter Manager's Password: ";
+                cin >> password;
+
+                Manager *newManager = new Manager(userId, username, password, 1);
+                managerList.insert(newManager);
+            }
+            else if (managerChoice == "2")
+            {
+                managerList.display();
+                string userId;
+                cout << "Enter the User ID of the manager you wish to modify: ";
+                cin >> userId;
+                managerList.setManagerStatusByUserId(userId);
+            }
+            else if (managerChoice == "3")
+            {
+                break;
+            }
+            else
+            {
+                cout << "Invalid choice. Choose between 1 and 3.";
+            }
         }
         else if (choice == "2")
         {
         }
-else if (choice == "3")
-{
-    cout << "Initiating the sacred ritual of logout...\n";
-}
-else
-{
-    cout << "Ah, the realm of confusion! Enter a domain between 1 and 3, oh mighty administrator.\n";
+        else if (choice == "3")
+        {
+            cout << "Initiating the sacred ritual of logout...\n";
+        }
+        else
+        {
+            cout << "Ah, the realm of confusion! Enter a domain between 1 and 3, oh mighty administrator.\n";
         }
     } while (choice != "3");
 }
@@ -222,6 +260,18 @@ void Manager::searchTenantInfo(LinkedList &list)
     }
     default:
         cout << "Invalid choice. Please enter a number between 1 and 4.\n";
+    }
+}
+
+void Manager::setStatus(bool newStatus)
+{
+    if (newStatus == 0 || newStatus == 1)
+    {
+        status = newStatus; // Assuming the status member variable exists in the Manager class
+    }
+    else
+    {
+        cout << "Invalid status value. Status should be 0 (inactive) or 1 (active).";
     }
 }
 

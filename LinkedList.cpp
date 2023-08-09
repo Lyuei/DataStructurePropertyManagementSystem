@@ -71,6 +71,53 @@ void LinkedList::remove(string userId) {
     }
 }
 
+
+void LinkedList::setManagerStatusByUserId(string userId) {
+    Node* current = head;
+
+    while (current != NULL) {
+        Manager* manager = dynamic_cast<Manager*>(current->data);
+        
+        if (manager != NULL && manager->userId == userId) {
+            cout << "Enter new status (1 for active, 0 for inactive): ";
+            bool newStatus;
+            cin >> newStatus;
+
+            if (newStatus == 1 || newStatus == 0) {
+                manager->setStatus(newStatus);  // Assuming there's a 'setStatus' method
+                cout << "Status updated successfully!";
+            } else {
+                cout << "Invalid status entered. Please enter 1 for active or 0 for inactive.";
+            }
+            return;  // Exit the method once the manager is found and status is updated
+        }
+        
+        current = current->next;
+    }
+
+    cout << "Manager with User ID " << userId << " not found.";
+}
+
+void LinkedList::searchManagerByUserId(string userId) {
+    Node* current = head;
+    bool managerFound = false;
+    while (current != NULL) {
+        Manager* manager = dynamic_cast<Manager*>(current->data);
+        if (manager != NULL) {
+            // Search the userId field for the searchCriterion
+            if (manager->userId == userId) {
+                manager->display();
+                managerFound = true;
+            }
+        }
+        current = current->next;
+    }
+    if (!managerFound) {
+        cout << "It appears we've stumbled into a barren wasteland with your criteria. Time to broaden the horizons!\n";
+    }
+}
+
+
 void LinkedList::searchTenantByUserId(string userId) {
     Node* current = head;
     bool tenantFound = false;
@@ -86,7 +133,7 @@ void LinkedList::searchTenantByUserId(string userId) {
         current = current->next;
     }
     if (!tenantFound) {
-        cout << "It appears we've stumbled into a tenant-less desert with your criteria. Time to broaden the horizons!\n";
+        cout << "It appears we've stumbled into a barren wasteland with your criteria. Time to broaden the horizons!\n";
     }
 }
 
@@ -159,4 +206,3 @@ void LinkedList::searchTenantByLastLogin(tm lastLogin) {
         cout << "It appears we've stumbled into a tenant-less desert with your criteria. Time to broaden the horizons!\n";
     }
 }
-

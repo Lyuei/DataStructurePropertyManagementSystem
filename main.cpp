@@ -8,7 +8,7 @@ User *login(const string &username, const string &password, LinkedList &adminLis
     User *user = adminList.login(username, password);
     if (user != NULL)
     {
-        cout << "Let the grand spectacle of control and regulation unfold! Welcome, " << user->username << "!\n";
+        cout << "Let the grand spectacle of control and regulation unfold! Welcome, \n" << user->username << "!\n";
         admin.adminMenu(tenantList, managerList);
         return user;
     }
@@ -16,7 +16,7 @@ User *login(const string &username, const string &password, LinkedList &adminLis
     user = managerList.login(username, password);
     if (user != NULL)
     {
-        cout << "It's showtime – time to orchestrate the daily madness! Welcome, " << user->username << "!\n";
+        cout << "It's showtime – time to orchestrate the daily madness! Welcome, \n" << user->username << "!\n";
         manager.managerMenu();
         return user;
     }
@@ -24,7 +24,7 @@ User *login(const string &username, const string &password, LinkedList &adminLis
     user = tenantList.login(username, password);
     if (user != NULL)
     {
-        cout << "Saddle up for the wild ride through the world of renting – where the walls have stories, and the carpet has seen things. Welcome, " << user->username << "!\n";
+        cout << "Saddle up for the wild ride through the world of renting – where the walls have stories, and the carpet has seen things. Welcome, \n" << user->username << "!\n";
         tenant.tenantMenu();
         return user;
     }
@@ -47,7 +47,9 @@ int main()
 
     LinkedList managerList;
     Manager *newManager = new Manager("11", "manager", "manager", 1);
+    Manager *newManager1 = new Manager("12", "manager1", "manager1", 0);
     managerList.insert(newManager);
+    managerList.insert(newManager1);
 
     LinkedList tenantList;
     Tenant *newTenant = new Tenant("11", "tenant", "tenant", "yuwei", 21, {0, 0, 0, 1, 0, 100});

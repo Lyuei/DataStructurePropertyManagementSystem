@@ -36,6 +36,7 @@ public:
     void managerMenu();    
     void displaySortedTenants(LinkedList& list);
     void searchTenantInfo(LinkedList& list);
+    void setStatus(bool newStatus);
 };
 
 // Derived tenant class
