@@ -17,8 +17,9 @@ private:
     Node *head;
 
 public:
-    LinkedList() : head(NULL) {}
+    LinkedList() : head(nullptr) {}
     Node *begin() { return head; }
+    const Node *begin() const { return head; }
     Node *end() { return nullptr; }
     void insert(User *user);
     // User *search(string userId);
@@ -27,15 +28,19 @@ public:
     void display() const;
     void remove(string userId);
     void searchTenantByUserId(string userId);
-    void searchTenantByName(const string& searchCriterion);
+    void searchManagerByUserId(string userId);
+    void searchTenantByName(const string &searchCriterion);
     void searchTenantByAge(int age);
     void searchTenantByLastLogin(tm lastLogin);
+    void setManagerStatusByUserId(string userId);
+    LinkedList filter(const TenantFilterCriteria &criteria);
+    bool searchByUsername(const string &username) const;
 
     vector<Tenant *> to_vector() const
     {
         vector<Tenant *> vec;
         Node *current = head;
-        while (current != NULL)
+        while (current != nullptr)
         {
             Tenant *tenant = dynamic_cast<Tenant *>(current->data);
             if (tenant != nullptr)
@@ -47,4 +52,3 @@ public:
         return vec;
     }
 };
-

@@ -3,6 +3,7 @@
 #include <chrono>
 #include <algorithm>
 #include <vector>
+#include <sstream>
 
 using namespace chrono;
 
@@ -26,31 +27,283 @@ void Admin::display() const
 void Admin::adminMenu(LinkedList &tenantList, LinkedList &managerList)
 {
     string choice;
+
+    PropertyLinkedList propertyList;
+    readProperties(propertyList);
+
     do
     {
-        cout << "1. Breathe life into the Manager Realm: Forge a new overseer or alter their fate\n";
+        cout << "\n1. Breathe life into the Manager Realm: Forge a new overseer or alter their fate\n";
         cout << "2. Unveil the Chronicles of Tenants and Properties with the power of filtering\n";
         cout << "3. Retreat from this digital dominion – Logout for now\n";
         cout << "Enter your command wisely: ";
 
         cin >> choice;
-
         if (choice == "1")
         {
-            managerList.display();
+            string managerChoice;
+            cout << "\n1. Add new manager\n";
+            cout << "2. Modify manager status\n";
+            cout << "3. Back\n";
+
+            cin >> managerChoice;
+
+            if (managerChoice == "1")
+            {
+                managerList.display();
+                string userId;
+                string username;
+                string password;
+                // Assuming you want to take inputs for the userId, username, and password
+                cout << "Enter Manager's User ID: ";
+                cin >> userId;
+                cout << "Enter Manager's Username: ";
+                cin >> username;
+                cout << "Enter Manager's Password: ";
+                cin >> password;
+
+                Manager *newManager = new Manager(userId, username, password, 1);
+                managerList.insert(newManager);
+            }
+            else if (managerChoice == "2")
+            {
+                managerList.display();
+                string userId;
+                cout << "Enter the User ID of the manager you wish to modify: ";
+                cin >> userId;
+                managerList.setManagerStatusByUserId(userId);
+            }
+            else if (managerChoice == "3")
+            {
+                break;
+            }
+            else
+            {
+                cout << "Invalid choice. Choose between 1 and 3.";
+            }
         }
         else if (choice == "2")
         {
+            string tenantOrProperty;
+            cout << "\n1. Display Tenants\n";
+            cout << "2. Display Properties\n";
+            cout << "3. Back\n";
+
+            cin >> tenantOrProperty;
+
+            if (tenantOrProperty == "1")
+            {
+                adminTenantMenu(tenantList);
+            }
+            else if (tenantOrProperty == "2")
+            {
+                adminPropertyMenu();
+            }
+            else if (tenantOrProperty == "3")
+            {
+            }
+            else
+            {
+                cout << "Invalid choice. Choose between 1 and 3.";
+            }
         }
-else if (choice == "3")
-{
-    cout << "Initiating the sacred ritual of logout...\n";
-}
-else
-{
-    cout << "Ah, the realm of confusion! Enter a domain between 1 and 3, oh mighty administrator.\n";
+        else if (choice == "3")
+        {
+            cout << "Initiating the sacred ritual of logout...\n";
+        }
+        else
+        {
+            cout << "Ah, the realm of confusion! Enter a domain between 1 and 3, oh mighty administrator.\n";
         }
     } while (choice != "3");
+}
+
+void Admin::adminPropertyMenu()
+{
+    FilterCriteria criteria;
+
+    PropertyLinkedList propertyList;
+    readProperties(propertyList);
+
+    // Monthly Rent
+    cout << "Enter minimum monthly rent: ";
+    cin >> criteria.min_monthly_rent;
+    cout << "Enter maximum monthly rent: ";
+    cin >> criteria.max_monthly_rent;
+
+    // Completion Year
+    cout << "Enter minimum completion year (or any negative number to skip): ";
+    cin >> criteria.min_completion_year;
+    if (criteria.min_completion_year < 0)
+        criteria.min_completion_year = INT_MIN;
+
+    cout << "Enter maximum completion year (or any negative number to skip): ";
+    cin >> criteria.max_completion_year;
+    if (criteria.max_completion_year < 0)
+        criteria.max_completion_year = INT_MAX;
+
+    // Rooms
+    cout << "Enter minimum number of rooms: ";
+    cin >> criteria.min_rooms;
+    cout << "Enter maximum number of rooms: ";
+    cin >> criteria.max_rooms;
+
+    // Parking
+    cout << "Enter minimum number of parking spots (or any negative number to skip): ";
+    cin >> criteria.min_parking;
+    if (criteria.min_parking < 0)
+        criteria.min_parking = INT_MIN;
+
+    cout << "Enter maximum number of parking spots: ";
+    cin >> criteria.max_parking;
+    if (criteria.max_parking < 0)
+        criteria.max_parking = INT_MAX;
+
+    // Bathroom
+    cout << "Enter minimum number of bathrooms (or 0 to skip): ";
+    cin >> criteria.min_bathroom;
+    cout << "Enter maximum number of bathrooms (or 0 to skip): ";
+    cin >> criteria.max_bathroom;
+
+    // Size
+    cout << "Enter minimum property size: ";
+    cin >> criteria.min_size;
+    cout << "Enter maximum property size: ";
+    cin >> criteria.max_size;
+
+    // Location
+    cout << "Enter desired location (or press enter to skip): ";
+    cin.ignore(); // To clear the input buffer
+    getline(cin, criteria.location);
+
+    // Property Type
+    cout << "Enter property type ('Condominium', 'Apartment', 'Service Residence', 'Flat' - or press enter to skip): ";
+    getline(cin, criteria.property_type);
+
+    // Furnished
+    cout << "Is the property furnished? (Enter 'Partially Furnished', 'Fully Furnished', 'Not Furnished', or press enter to skip): ";
+    getline(cin, criteria.furnished);
+
+    // Region
+    cout << "Enter desired region (or press enter to skip): ";
+    getline(cin, criteria.region);
+
+    // Facilities
+    cout << "Enter required facilities (comma-separated, e.g., 'pool,gym' - or press enter to skip): ";
+    string facilities;
+    getline(cin, facilities);
+    stringstream ss(facilities);
+    string facility;
+    while (getline(ss, facility, ','))
+    {
+        criteria.required_facilities.push_back(facility);
+    }
+
+    // Additional Facilities
+    cout << "Enter required additional facilities (comma-separated - or press enter to skip): ";
+    string additional_facilities;
+    getline(cin, additional_facilities);
+    stringstream ss2(additional_facilities);
+    string additional_facility;
+    while (getline(ss2, additional_facility, ','))
+    {
+        criteria.required_additional_facilities.push_back(additional_facility);
+    }
+
+    // Number of rows to display
+    int numRows;
+    cout << "Enter the number of rows to display: ";
+    while (!(cin >> numRows))
+    {
+        cout << "Invalid input. Please enter a number: ";
+        cin.clear();                                         // Clear the error flags
+        cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Discard invalid input
+    }
+
+    propertyList.filter(criteria).display(numRows);
+}
+
+void Admin::adminTenantMenu(LinkedList &tenantList)
+{
+    TenantFilterCriteria tenantCriteria;
+
+    cout << "Enter tenant name (or press enter to skip): ";
+    cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Clear the input buffer
+    getline(cin, tenantCriteria.name);
+
+    // Input validation loop for minimum age
+    while (true)
+    {
+        cout << "Enter minimum age: ";
+        if (cin >> tenantCriteria.min_age)
+        {
+            break;
+        }
+        else
+        {
+            cout << "Invalid input! Please enter a valid age." << endl;
+            cin.clear();                                         // Clear the error flag
+            cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Clear the input buffer
+        }
+    }
+
+    // Input validation loop for maximum age
+    while (true)
+    {
+        cout << "Enter maximum age: ";
+        if (cin >> tenantCriteria.max_age)
+        {
+            break;
+        }
+        else
+        {
+            cout << "Invalid input! Please enter a valid age." << endl;
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        }
+    }
+
+    char choice;
+    cout << "Do you want to filter by last login date? (y/n): ";
+    cin >> choice;
+
+    if (choice == 'y' || choice == 'Y')
+    {
+        tenantCriteria.useDate = true;
+
+        // Input validation loop for start date
+        while (true)
+        {
+            cout << "Enter start date (YYYY MM DD): ";
+            if (cin >> tenantCriteria.startDate.tm_year >> tenantCriteria.startDate.tm_mon >> tenantCriteria.startDate.tm_mday)
+            {
+                break;
+            }
+            else
+            {
+                cout << "Invalid input! Please enter a valid date in the format YYYY MM DD." << endl;
+                cin.clear();
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            }
+        }
+
+        // Input validation loop for end date
+        while (true)
+        {
+            cout << "Enter end date (YYYY MM DD): ";
+            if (cin >> tenantCriteria.endDate.tm_year >> tenantCriteria.endDate.tm_mon >> tenantCriteria.endDate.tm_mday)
+            {
+                break;
+            }
+            else
+            {
+                cout << "Invalid input! Please enter a valid date in the format YYYY MM DD." << endl;
+                cin.clear();
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            }
+        }
+    }
+    tenantList.filter(tenantCriteria).display();
 }
 
 Manager::Manager(string userId, string username, string password, bool status)
@@ -222,6 +475,18 @@ void Manager::searchTenantInfo(LinkedList &list)
     }
     default:
         cout << "Invalid choice. Please enter a number between 1 and 4.\n";
+    }
+}
+
+void Manager::setStatus(bool newStatus)
+{
+    if (newStatus == 0 || newStatus == 1)
+    {
+        status = newStatus; // Assuming the status member variable exists in the Manager class
+    }
+    else
+    {
+        cout << "Invalid status value. Status should be 0 (inactive) or 1 (active).";
     }
 }
 
