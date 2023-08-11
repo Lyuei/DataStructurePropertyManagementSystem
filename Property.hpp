@@ -13,6 +13,33 @@ enum class SortCriteria
     Size
 };
 
+struct FilterCriteria
+{
+    // Numeric attributes with min and max values
+    int min_monthly_rent = 0;
+    int max_monthly_rent = INT_MAX;
+    int min_completion_year = INT_MIN;
+    int max_completion_year = INT_MAX;
+    int min_rooms = 0;
+    int max_rooms = INT_MAX;
+    int min_parking = 0;
+    int max_parking = INT_MAX;
+    int min_bathroom = 0;
+    int max_bathroom = INT_MAX;
+    int min_size = 0;
+    int max_size = INT_MAX;
+
+    // String attributes for direct match (empty means no filter)
+    string location = "";
+    string property_type = "";
+    string furnished = ""; // Assuming possible values might be "Yes", "No", etc.
+    string region = "";
+
+    // Vector attributes for contains filter
+    vector<string> required_facilities;            // Properties should have all of these
+    vector<string> required_additional_facilities; // Properties should have all of these
+};
+
 class Property
 {
 // private:
@@ -55,12 +82,15 @@ private:
     std::vector<Property*> properties; // Declare the properties vector
 
 public:
+    PropertyLinkedList() : head(nullptr), tail(nullptr){};
     ~PropertyLinkedList();
 
     void insertAtEnd(Property *newProperty);
+    // void insert(Property *newProperty);
     void display(int numProperties) const;
     void mergeSortByCriterion(SortCriteria criterion);
     void quickSortByCriterion(SortCriteria criterion);
+<<<<<<< HEAD
 
     Property *linearSearch(const string &criterion);
     Property* binarySearch(const std::string& criterion);
@@ -103,3 +133,7 @@ public:
     //     }
     // }
 };
+=======
+    PropertyLinkedList filter(const FilterCriteria &criteria) const;
+};
+>>>>>>> 1e6a91079e2a670eb0105ed5eb31fd324e1e0442

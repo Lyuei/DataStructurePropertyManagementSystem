@@ -1,7 +1,11 @@
 #include "property.hpp"
 #include <iostream>
 #include <chrono>
+<<<<<<< HEAD
 #include <algorithm> // For std::sort
+=======
+#include <algorithm>
+>>>>>>> 1e6a91079e2a670eb0105ed5eb31fd324e1e0442
 
 Property::Property(string ads_id, string prop_name, int completion_year, int monthly_rent, string location,
                    string property_type, int rooms, int parking, int bathroom, int size, string furnished,
@@ -39,22 +43,43 @@ void Property::display() const
 
 void PropertyLinkedList::insertAtEnd(Property *data)
 {
-    // The next property should be null, as this will be the last property in the list
-    data->next = nullptr;
-
     // If the list is empty, the head and tail should both be the new property
     if (head == nullptr)
     {
+        data->next = nullptr; // Set next to null only when you're sure you want to change it
         head = data;
         tail = data;
     }
     else
     {
         // Otherwise, add the new property to the end of the list and update the tail
+        data->next = nullptr;
         tail->next = data;
         tail = data;
     }
 }
+
+// void PropertyLinkedList::insert(Property *newProperty)
+// {
+//     if (!newProperty)
+//         return; // Null check
+
+//     if (head == nullptr)
+//     {
+//         // If the list is empty, simply set the head to the new property
+//         head = newProperty;
+//     }
+//     else
+//     {
+//         // If the list is not empty, traverse to the end and add the new property
+//         Property *current = head;
+//         while (current->next != nullptr)
+//         {
+//             current = current->next;
+//         }
+//         current->next = newProperty;
+//     }
+// }
 
 void PropertyLinkedList::display(int numRows) const
 {
@@ -309,6 +334,7 @@ void PropertyLinkedList::quickSortByCriterion(SortCriteria criterion)
     cout << "Time taken by Quick Sort: " << duration.count() / 1000000.0 << " seconds" << endl;
 }
 
+<<<<<<< HEAD
 Property *PropertyLinkedList::linearSearch(const string &criterion)
 {
     Property *current = head;
@@ -368,3 +394,68 @@ void PropertyLinkedList::sortProperties()
     sort(properties.begin(), properties.end(), [](Property *a, Property *b)
          { return a->monthly_rent < b->monthly_rent; });
 }
+=======
+// filterProperties function
+PropertyLinkedList PropertyLinkedList::filter(const FilterCriteria &criteria) const
+{
+    PropertyLinkedList filteredList;
+    Property *current = head;
+
+    while (current != nullptr)
+    {
+        bool match = true;
+
+        // Numeric filters
+        match &= current->monthly_rent >= criteria.min_monthly_rent && current->monthly_rent <= criteria.max_monthly_rent;
+        match &= current->completion_year >= criteria.min_completion_year && current->completion_year <= criteria.max_completion_year;
+        match &= current->rooms >= criteria.min_rooms && current->rooms <= criteria.max_rooms;
+        match &= current->parking >= criteria.min_parking && current->parking <= criteria.max_parking;
+        match &= current->bathroom >= criteria.min_bathroom && current->bathroom <= criteria.max_bathroom;
+        match &= current->size >= criteria.min_size && current->size <= criteria.max_size;
+
+        // String filters
+        if (!criteria.location.empty())
+            match &= current->location == criteria.location;
+        if (!criteria.property_type.empty())
+            match &= current->property_type == criteria.property_type;
+        if (!criteria.furnished.empty())
+            match &= current->furnished == criteria.furnished;
+        if (!criteria.region.empty())
+            match &= current->region == criteria.region;
+
+        // Vector filters
+        for (const auto &facility : criteria.required_facilities)
+        {
+            if (find(current->facilities.begin(), current->facilities.end(), facility) == current->facilities.end())
+            {
+                match = false;
+                break;
+            }
+        }
+
+        for (const auto &additional_facility : criteria.required_additional_facilities)
+        {
+            if (find(current->additional_facilities.begin(), current->additional_facilities.end(), additional_facility) == current->additional_facilities.end())
+            {
+                match = false;
+                break;
+            }
+        }
+
+        if (match)
+        {
+            // Deep copy the current Property node
+            Property *newProperty = new Property(
+                current->ads_id, current->prop_name, current->completion_year, current->monthly_rent,
+                current->location, current->property_type, current->rooms, current->parking,
+                current->bathroom, current->size, current->furnished, current->facilities,
+                current->additional_facilities, current->region);
+
+            filteredList.insertAtEnd(newProperty);
+        }
+        current = current->next;
+    }
+
+    return filteredList;
+}
+>>>>>>> 1e6a91079e2a670eb0105ed5eb31fd324e1e0442
