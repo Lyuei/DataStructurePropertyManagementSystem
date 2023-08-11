@@ -75,7 +75,6 @@ void Admin::adminMenu(LinkedList &tenantList, LinkedList &managerList)
             }
             else if (managerChoice == "3")
             {
-                break;
             }
             else
             {
