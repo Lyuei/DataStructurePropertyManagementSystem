@@ -1,6 +1,7 @@
 #include "property.hpp"
 #include <iostream>
 #include <chrono>
+#include <algorithm> // For std::sort
 
 Property::Property(string ads_id, string prop_name, int completion_year, int monthly_rent, string location,
                    string property_type, int rooms, int parking, int bathroom, int size, string furnished,
@@ -198,7 +199,8 @@ Property *getTail(Property *curr)
 // Partition the list using the last node as the pivot
 Property *partition(Property *head, Property *end, Property *&newHead, Property *&newEnd, SortCriteria criterion)
 {
-    if (end == nullptr) {
+    if (end == nullptr)
+    {
         // Handle the case where the end pointer is null
         return nullptr;
     }
@@ -305,4 +307,64 @@ void PropertyLinkedList::quickSortByCriterion(SortCriteria criterion)
     auto stop = chrono::high_resolution_clock::now();
     auto duration = chrono::duration_cast<chrono::microseconds>(stop - start);
     cout << "Time taken by Quick Sort: " << duration.count() / 1000000.0 << " seconds" << endl;
+}
+
+Property *PropertyLinkedList::linearSearch(const string &criterion)
+{
+    Property *current = head;
+    while (current != nullptr)
+    {
+        if (current->prop_name == criterion)
+        { // Replace with the actual property name member
+            return current;
+        }
+        current = current->next;
+    }
+    return nullptr; // Property not found
+}
+
+Property *PropertyLinkedList::binarySearch(const std::string &criterion)
+{
+    sortProperties(); // Ensure that the list is sorted before performing binary search
+
+    int left = 0;
+    int right = properties.size() - 1;
+
+
+    // Use the 'properties' vector to perform binary search
+    while (left <= right)
+    {
+        int mid = left + (right - left) / 2;
+        if (properties[mid]->prop_name == criterion)
+        {
+            // Found the property
+            return properties[mid];
+        }
+        else if (properties[mid]->prop_name < criterion)
+        {
+            left = mid + 1;
+        }
+        else
+        {
+            right = mid - 1;
+        }
+    }
+
+    return nullptr; // Property not found
+}
+
+void PropertyLinkedList::sortProperties()
+{
+    // Convert the linked list to a vector for sorting
+    properties.clear();
+    Property *current = head;
+    while (current != nullptr)
+    {
+        properties.push_back(current);
+        current = current->next;
+    }
+
+    // Sort the vector of properties based on the chosen criteria (e.g., monthly rent)
+    sort(properties.begin(), properties.end(), [](Property *a, Property *b)
+         { return a->monthly_rent < b->monthly_rent; });
 }
