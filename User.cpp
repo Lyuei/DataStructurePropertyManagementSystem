@@ -33,6 +33,7 @@ void Admin::adminMenu(LinkedList &tenantList, LinkedList &managerList)
 
     do
     {
+        cout << "\nAdmin's Domain: \n";
         cout << "\n1. Breathe life into the Manager Realm: Forge a new overseer or alter their fate\n";
         cout << "2. Unveil the Chronicles of Tenants and Properties with the power of filtering\n";
         cout << "3. Retreat from this digital dominion – Logout for now\n";
@@ -510,7 +511,7 @@ void Tenant::tenantMenu()
 
     do
     {
-        cout << "\nTenant's Realm: \n";
+        cout << "\nTenant's Universe: \n";
         cout << "1. Sort and unveil the secrets of property information\n";
         cout << "2. Seek and reveal property details through the digital maze\n";
         cout << "3. Save a special property, a cozy corner of your world\n";
