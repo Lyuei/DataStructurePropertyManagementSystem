@@ -1,6 +1,8 @@
 #pragma once
 
 #include <string>
+#include "Property.hpp" // Adjust the actual header filename if needed
+
 
 using namespace std;
 
@@ -63,4 +65,5 @@ public:
     Tenant(string userId, string username, string password, string name, int age, tm lastLogin);
     void display() const override;
     void tenantMenu(User* loggedInUser);
+    void searchPropertyByDecision(PropertyLinkedList &propertyList);
 };

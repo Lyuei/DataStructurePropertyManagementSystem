@@ -308,6 +308,21 @@ void PropertyLinkedList::quickSortByCriterion(SortCriteria criterion)
     cout << "Time taken by Quick Sort: " << duration.count() / 1000000.0 << " seconds" << endl;
 }
 
+Property *PropertyLinkedList::linearSearch(const string &criterion)
+{
+    Property *current = head;
+    while (current != nullptr)
+    {
+        if (current->prop_name == criterion)
+        { // Replace with the actual property name member
+            return current;
+        }
+        current = current->next;
+    }
+    return nullptr; // Property not found
+}
+
+
 // filterProperties function
 PropertyLinkedList PropertyLinkedList::filter(const FilterCriteria &criteria) const
 {
@@ -371,7 +386,6 @@ PropertyLinkedList PropertyLinkedList::filter(const FilterCriteria &criteria) co
 
     return filteredList;
 }
-
 // Function to check if a given ads_id is present in the linked list
 bool PropertyLinkedList::adsIdExists(const std::string &ads_id) const
 {

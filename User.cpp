@@ -597,3 +597,38 @@ void Tenant::tenantMenu(User *loggedInUser)
         }
     } while (choice != "6"); // This condition should check against a string
 }
+
+void Tenant::searchPropertyByDecision(PropertyLinkedList &propertyList) {
+    string searchCriterion;
+    cout << "Enter the search criterion: ";
+    cin.ignore(); // Ignore newline character
+    getline(cin, searchCriterion);
+
+     // Perform both search algorithms and measure their execution time
+    auto startLinear = chrono::high_resolution_clock::now();
+    Property *linearResult = propertyList.linearSearch(searchCriterion);
+    auto stopLinear = chrono::high_resolution_clock::now();
+    auto durationLinear = chrono::duration_cast<chrono::microseconds>(stopLinear - startLinear);
+
+    auto startBinary = chrono::high_resolution_clock::now();
+    Property *binaryResult = propertyList.binarySearch(searchCriterion);
+    auto stopBinary = chrono::high_resolution_clock::now();
+    auto durationBinary = chrono::duration_cast<chrono::microseconds>(stopBinary - startBinary);
+
+    // Display results and execution times
+    if (linearResult) {
+        cout << "Linear Search Result:\n";
+        linearResult->display();
+    } else {
+        cout << "Property not found using Linear Search.\n";
+    }
+    cout << "Time taken by Linear Search: " << durationLinear.count() / 1000000.0 << " seconds\n";
+
+    if (binaryResult) {
+        cout << "Binary Search Result:\n";
+        binaryResult->display();
+    } else {
+        cout << "Property not found using Binary Search.\n";
+    }
+    cout << "Time taken by Binary Search: " << durationBinary.count() / 1000000.0 << " seconds\n";
+}
