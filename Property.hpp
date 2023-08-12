@@ -90,51 +90,7 @@ public:
     void display(int numProperties) const;
     void mergeSortByCriterion(SortCriteria criterion);
     void quickSortByCriterion(SortCriteria criterion);
-<<<<<<< HEAD
-
-    Property *linearSearch(const string &criterion);
-    Property* binarySearch(const std::string& criterion);
-    void sortProperties();
-
-    // // Mark a property as a favorite based on its unique identifier (e.g., ads_id)
-    // void markFavorite(const string &ads_id)
-    // {
-    //     Property *current = head;
-    //     while (current != nullptr)
-    //     {
-    //         if (current->getAdsId() == ads_id)
-    //         {
-    //             current->toggleFavorite();
-    //             cout << "Property marked as favorite.\n";
-    //             return;
-    //         }
-    //         current = current->next;
-    //     }
-    //     cout << "Property not found.\n";
-    // }
-
-    // // Display favorite properties
-    // void displayFavorites() const
-    // {
-    //     Property *current = head;
-    //     bool foundFavorite = false;
-    //     while (current != nullptr)
-    //     {
-    //         if (current->isFavorite)
-    //         {
-    //             current->display();
-    //             foundFavorite = true;
-    //         }
-    //         current = current->next;
-    //     }
-    //     if (!foundFavorite)
-    //     {
-    //         cout << "No favorite properties.\n";
-    //     }
-    // }
-};
-=======
     PropertyLinkedList filter(const FilterCriteria &criteria) const;
     bool adsIdExists(const std::string &ads_id) const;
+    Property* linearSearch(const string &criterion);
 };
->>>>>>> 1e6a91079e2a670eb0105ed5eb31fd324e1e0442
