@@ -2,6 +2,7 @@
 #include <iostream>
 #include <chrono>
 #include <algorithm>
+#include <functional>
 
 Property::Property(string ads_id, string prop_name, int completion_year, int monthly_rent, string location,
                    string property_type, int rooms, int parking, int bathroom, int size, string furnished,
@@ -388,21 +389,257 @@ bool PropertyLinkedList::adsIdExists(const std::string &ads_id) const
     return false;
 }
 
-bool PropertyLinkedList::compareAdsId(Property* a, Property* b)
+bool PropertyLinkedList::compareAdsId(Property *a, Property *b)
 {
     return a->ads_id < b->ads_id;
 }
 
-Property* PropertyLinkedList::findProperty(const std::string& ads_id)
+Property *PropertyLinkedList::findPropertyByCriteria(const SearchCriteria &criteria, const string &str_value, int int_value)
 {
-    // Ensure the vector is sorted before performing binary search
-    std::sort(properties.begin(), properties.end(), compareAdsId);
+    // Define our comparison functions for string and integer
+    function<bool(Property *, Property *)> comparator;
 
-    auto it = std::lower_bound(properties.begin(), properties.end(), ads_id, 
-        [](Property* prop, const std::string& ads_id) { return prop->ads_id < ads_id; });
-
-    if (it != properties.end() && (*it)->ads_id == ads_id) {
-        return *it;  // Property found
+    // Set the appropriate comparison function based on the search criteria
+    switch (criteria)
+    {
+    case SearchCriteria::ADS_ID:
+        comparator = [](Property *a, Property *b)
+        { return a->ads_id < b->ads_id; };
+        break;
+    case SearchCriteria::PROP_NAME:
+        comparator = [](Property *a, Property *b)
+        { return a->prop_name < b->prop_name; };
+        break;
+    case SearchCriteria::LOCATION:
+        comparator = [](Property *a, Property *b)
+        { return a->location < b->location; };
+        break;
+    case SearchCriteria::PROPERTY_TYPE:
+        comparator = [](Property *a, Property *b)
+        { return a->property_type < b->property_type; };
+        break;
+    case SearchCriteria::FURNISHED:
+        comparator = [](Property *a, Property *b)
+        { return a->furnished < b->furnished; };
+        break;
+    case SearchCriteria::REGION:
+        comparator = [](Property *a, Property *b)
+        { return a->region < b->region; };
+        break;
+    case SearchCriteria::COMPLETION_YEAR:
+        comparator = [](Property *a, Property *b)
+        { return a->completion_year < b->completion_year; };
+        break;
+    case SearchCriteria::MONTHLY_RENT:
+        comparator = [](Property *a, Property *b)
+        { return a->monthly_rent < b->monthly_rent; };
+        break;
+    case SearchCriteria::ROOMS:
+        comparator = [](Property *a, Property *b)
+        { return a->rooms < b->rooms; };
+        break;
+    case SearchCriteria::PARKING:
+        comparator = [](Property *a, Property *b)
+        { return a->parking < b->parking; };
+        break;
+    case SearchCriteria::BATHROOM:
+        comparator = [](Property *a, Property *b)
+        { return a->bathroom < b->bathroom; };
+        break;
+    case SearchCriteria::SIZE:
+        comparator = [](Property *a, Property *b)
+        { return a->size < b->size; };
+        break;
     }
-    return nullptr;  // Property not found
+
+    // Sort the properties based on the comparator
+    sort(properties.begin(), properties.end(), comparator);
+
+    // Now, use the appropriate comparison function based on whether we're searching by string or integer
+    switch (criteria)
+    {
+    // String-based search
+    case SearchCriteria::ADS_ID:
+    case SearchCriteria::PROP_NAME:
+    case SearchCriteria::LOCATION:
+    case SearchCriteria::PROPERTY_TYPE:
+    case SearchCriteria::FURNISHED:
+    case SearchCriteria::REGION:
+    {
+        auto it = lower_bound(properties.begin(), properties.end(), str_value,
+                              [&criteria](Property *prop, const string &value)
+                              {
+                                  switch (criteria)
+                                  {
+                                  case SearchCriteria::ADS_ID:
+                                      return prop->ads_id < value;
+                                  case SearchCriteria::PROP_NAME:
+                                      return prop->prop_name < value;
+                                  case SearchCriteria::LOCATION:
+                                      return prop->location < value;
+                                  case SearchCriteria::PROPERTY_TYPE:
+                                      return prop->property_type < value;
+                                  case SearchCriteria::FURNISHED:
+                                      return prop->furnished < value;
+                                  case SearchCriteria::REGION:
+                                      return prop->region < value;
+                                  default:
+                                      return false;
+                                  }
+                              });
+
+        if (it != properties.end())
+        {
+            for (; it != properties.end(); ++it)
+            {
+                bool matched = false;
+                switch (criteria)
+                {
+                case SearchCriteria::ADS_ID:
+                    if ((*it)->ads_id == str_value)
+                    {
+                        matched = true;
+                        (*it)->display();
+                    }
+                    break;
+                case SearchCriteria::PROP_NAME:
+                    if ((*it)->prop_name == str_value)
+                    {
+                        matched = true;
+                        (*it)->display();
+                    }
+                    break;
+                case SearchCriteria::LOCATION:
+                    if ((*it)->location == str_value)
+                    {
+                        matched = true;
+                        (*it)->display();
+                    }
+                    break;
+                case SearchCriteria::PROPERTY_TYPE:
+                    if ((*it)->property_type == str_value)
+                    {
+                        matched = true;
+                        (*it)->display();
+                    }
+                    break;
+                case SearchCriteria::FURNISHED:
+                    if ((*it)->furnished == str_value)
+                    {
+                        matched = true;
+                        (*it)->display();
+                    }
+                    break;
+                case SearchCriteria::REGION:
+                    if ((*it)->region == str_value)
+                    {
+                        matched = true;
+                        (*it)->display();
+                    }
+                    break;
+                }
+                if (!matched)
+                {
+                    break; // If the property doesn't match the criteria, exit the loop
+                }
+            }
+        }
+        break;
+    }
+
+    // Integer-based search
+    default:
+    {
+        auto it = lower_bound(properties.begin(), properties.end(), int_value,
+                              [&criteria](Property *prop, int value)
+                              {
+                                  switch (criteria)
+                                  {
+                                  case SearchCriteria::COMPLETION_YEAR:
+                                      return prop->completion_year < value;
+                                  case SearchCriteria::MONTHLY_RENT:
+                                      return prop->monthly_rent < value;
+                                  case SearchCriteria::ROOMS:
+                                      return prop->rooms < value;
+                                  case SearchCriteria::PARKING:
+                                      return prop->parking < value;
+                                  case SearchCriteria::BATHROOM:
+                                      return prop->bathroom < value;
+                                  case SearchCriteria::SIZE:
+                                      return prop->size < value;
+                                  default:
+                                      return false;
+                                  }
+                              });
+
+        for (; it != properties.end(); ++it)
+        {
+            bool matched = false;
+            switch (criteria)
+            {
+            case SearchCriteria::COMPLETION_YEAR:
+                if ((*it)->completion_year == int_value)
+                {
+                    matched = true;
+                    (*it)->display();
+                }
+                break;
+            case SearchCriteria::MONTHLY_RENT:
+                if ((*it)->monthly_rent == int_value)
+                {
+                    matched = true;
+                    (*it)->display();
+                }
+                break;
+            case SearchCriteria::ROOMS:
+                if ((*it)->rooms == int_value)
+                {
+                    matched = true;
+                    (*it)->display();
+                }
+                break;
+            case SearchCriteria::PARKING:
+                if ((*it)->parking == int_value)
+                {
+                    matched = true;
+                    (*it)->display();
+                }
+                break;
+            case SearchCriteria::BATHROOM:
+                if ((*it)->bathroom == int_value)
+                {
+                    matched = true;
+                    (*it)->display();
+                }
+                break;
+            case SearchCriteria::SIZE:
+                if ((*it)->size == int_value)
+                {
+                    matched = true;
+                    (*it)->display();
+                }
+                break;
+            }
+            if (!matched)
+            {
+                break; // Exit the loop when the current property no longer matches
+            }
+        }
+        break;
+    }
+    }
+
+    cout << "Property not found." << endl;
+    return nullptr;
+}
+
+void PropertyLinkedList::updateVectorFromList()
+{
+    properties.clear();       // Clear the current vector
+    Property *current = head; // Assuming 'head' is the start of your linked list
+    while (current)
+    {
+        properties.push_back(current);
+        current = current->next;
+    }
 }

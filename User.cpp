@@ -6,6 +6,7 @@
 #include <sstream>
 
 using namespace chrono;
+using namespace std;
 
 User::User(string userId, string username, string password)
     : userId(userId), username(username), password(password) {}
@@ -348,7 +349,7 @@ void Manager::displaySortedTenants(LinkedList &tenantList)
             time_t lastLogin_time_t = mktime(&tenant->lastLogin);
             system_clock::time_point now_time_point = system_clock::from_time_t(now_time_t);
             system_clock::time_point lastLogin_time_point = system_clock::from_time_t(lastLogin_time_t);
-            duration<int, std::ratio<60 * 60 * 24>> days_since_last_login = duration_cast<duration<int, std::ratio<60 * 60 * 24>>>(now_time_point - lastLogin_time_point);
+            duration<int, ratio<60 * 60 * 24>> days_since_last_login = duration_cast<duration<int, ratio<60 * 60 * 24>>>(now_time_point - lastLogin_time_point);
 
             // Format last login date as dd-mm-yyyy
             char lastLoginDate[11];
@@ -559,11 +560,118 @@ void Tenant::tenantMenu(User *loggedInUser, FavouritePropertyLinkedList &favouri
         }
         else if (choice == "2")
         {
-            string listingId;
-            cout << "Enter Property Listing Id: ";
-            cin >> listingId;
+            // Display menu and get user's choice
+            int choice;
+            cout << "Choose the criteria for property search:" << endl;
+            cout << "1. Ads ID" << endl;
+            cout << "2. Property Name" << endl;
+            cout << "3. Completion Year" << endl;
+            cout << "4. Monthly Rent" << endl;
+            cout << "5. Location" << endl;
+            cout << "6. Property Type" << endl;
+            cout << "7. Number of Rooms" << endl;
+            cout << "8. Number of Parking Spaces" << endl;
+            cout << "9. Number of Bathrooms" << endl;
+            cout << "10. Size" << endl;
+            cout << "11. Furnished" << endl;
+            cout << "12. Region" << endl;
+            cout << "Enter your choice: ";
+            cin >> choice;
 
-            propertyList.findProperty(listingId);
+            // Now, based on the choice, prompt the user for the required input
+            SearchCriteria criteria;
+            string str_value;
+            int int_value;
+
+            switch (choice)
+            {
+            case 1:
+                criteria = SearchCriteria::ADS_ID;
+                cout << "Enter Property Listing Id: ";
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                getline(cin, str_value);
+                break;
+            case 2:
+                criteria = SearchCriteria::PROP_NAME;
+                cout << "Enter Property Name: ";
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                getline(cin, str_value);
+                break;
+            case 3:
+                criteria = SearchCriteria::COMPLETION_YEAR;
+                cout << "Enter Completion Year: ";
+                cin >> int_value;
+                break;
+            case 4:
+                criteria = SearchCriteria::MONTHLY_RENT;
+                cout << "Enter Monthly Rent: ";
+                cin >> int_value;
+                break;
+            case 5:
+                criteria = SearchCriteria::LOCATION;
+                cout << "Enter Location: ";
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                getline(cin, str_value);
+                break;
+            case 6:
+                criteria = SearchCriteria::PROPERTY_TYPE;
+                cout << "Enter Property Type: (Condominium/Apartment/Service Residence/Studio/Flat/Duplex)";
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                getline(cin, str_value);
+                break;
+            case 7:
+                criteria = SearchCriteria::ROOMS;
+                cout << "Enter Number of Rooms: ";
+                cin >> int_value;
+                break;
+            case 8:
+                criteria = SearchCriteria::PARKING;
+                cout << "Enter Number of Parking Spaces: ";
+                cin >> int_value;
+                break;
+            case 9:
+                criteria = SearchCriteria::BATHROOM;
+                cout << "Enter Number of Bathrooms: ";
+                cin >> int_value;
+                break;
+            case 10:
+                criteria = SearchCriteria::SIZE;
+                cout << "Enter Size: ";
+                cin >> int_value;
+                break;
+            case 11:
+                criteria = SearchCriteria::FURNISHED;
+                cout << "Is the property furnished? (Fully Furnished/Partially Furnished/Not Furnished): ";
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                getline(cin, str_value);
+                break;
+            case 12:
+                criteria = SearchCriteria::REGION;
+                cout << "Enter Region: ";
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                getline(cin, str_value);
+                break;
+            default:
+                cout << "Invalid choice!" << endl;
+                return;
+            }
+
+            propertyList.updateVectorFromList();
+            Property *result;
+
+            if (isStringCriteria(criteria))
+            {
+                result = propertyList.findPropertyByCriteria(criteria, str_value, 0);
+            }
+            else
+            {
+                result = propertyList.findPropertyByCriteria(criteria, "", int_value);
+            }
+
+            if (!result)
+            {
+                cout << "No property found with the given criteria." << endl;
+            }
         }
         else if (choice == "3")
         {
@@ -592,42 +700,48 @@ void Tenant::tenantMenu(User *loggedInUser, FavouritePropertyLinkedList &favouri
             bool validInput = false;
             while (!validInput)
             {
-                cout << "Enter the index of the property you wish to request: ";
-                cin >> selectedPropertyIndex;
+                cout << "Enter the index of the property you wish to request (or enter 'cancel' to exit): ";
+                string userInput;
+                cin >> userInput;
 
-                // Check for failed input stream (e.g., if user enters a non-numeric value)
-                if (cin.fail())
+                if (userInput == "cancel")
                 {
-                    cin.clear();                                                   // Clear the error flags
-                    cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // Discard invalid input
-                    cout << "Invalid input. Please enter a valid index number." << endl;
+                    cout << "Request cancelled." << endl;
+                    break; // Exit the loop if user input is 'cancel'
+                }
+
+                // Convert user input to an integer
+                selectedPropertyIndex = stoi(userInput);
+
+                // Check for failed conversion or invalid index
+                if (cin.fail() || !favouriteList.propertyAtIndexExists(selectedPropertyIndex))
+                {
+                    cin.clear();                                         // Clear the error flags
+                    cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Discard invalid input
+                    cout << "Invalid input. Please enter a valid index number or 'cancel' to exit." << endl;
                     continue;
                 }
 
-                // Validate the selected property index.
-                if (favouriteList.propertyAtIndexExists(selectedPropertyIndex))
-                {
-                    validInput = true; // Exit the loop
-                }
-                else
-                {
-                    cout << "Invalid property index. Make sure you select a property from your favorite list." << endl;
-                }
+                validInput = true; // Exit the loop
             }
 
-            RentRequest newRequest;
-            newRequest.userId = this->getUserId();
+            if (validInput)
+            {
+                RentRequest newRequest;
+                newRequest.userId = this->getUserId();
 
-            // Get the adsId of the selected property.
-            newRequest.adsId = favouriteList.getAdsIdAtIndex(selectedPropertyIndex);
+                // Get the adsId of the selected property.
+                newRequest.adsId = favouriteList.getAdsIdAtIndex(selectedPropertyIndex);
 
-            newRequest.status = RentRequestStatus::PENDING;
+                newRequest.status = RentRequestStatus::PENDING;
 
-            rentRequestList.insert(newRequest); // Add the request to the rent request list
-            cout << "Rent request placed successfully!" << endl;
+                rentRequestList.insert(newRequest); // Add the request to the rent request list
+                cout << "Rent request placed successfully!" << endl;
+            }
         }
         else if (choice == "5")
         {
+            rentRequestList.displayUserRentHistory(this->getUserId());
         }
         else if (choice == "6")
         {
@@ -638,4 +752,20 @@ void Tenant::tenantMenu(User *loggedInUser, FavouritePropertyLinkedList &favouri
             cout << "Ah, the land of indecision! Enter a realm between 1 and 6, mortal.\n";
         }
     } while (choice != "6"); // This condition should check against a string
+}
+
+bool Tenant::isStringCriteria(SearchCriteria criteria)
+{
+    switch (criteria)
+    {
+    case SearchCriteria::ADS_ID:
+    case SearchCriteria::PROP_NAME:
+    case SearchCriteria::LOCATION:
+    case SearchCriteria::PROPERTY_TYPE:
+    case SearchCriteria::FURNISHED:
+    case SearchCriteria::REGION:
+        return true;
+    default:
+        return false;
+    }
 }

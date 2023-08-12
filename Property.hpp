@@ -13,6 +13,22 @@ enum class SortCriteria
     Size
 };
 
+enum class SearchCriteria {
+    ADS_ID,
+    PROP_NAME,
+    LOCATION,
+    PROPERTY_TYPE,
+    FURNISHED,
+    REGION,
+    LAST_STRING_FIELD,  // this is a marker
+    COMPLETION_YEAR,
+    MONTHLY_RENT,
+    ROOMS,
+    PARKING,
+    BATHROOM,
+    SIZE
+};
+
 struct FilterCriteria
 {
     // Numeric attributes with min and max values
@@ -91,6 +107,9 @@ public:
     // Helper function for binary search on ads_id
     static bool compareAdsId(Property *a, Property *b);
 
-    // Find a property using binary search based on ads_id
-    Property *findProperty(const std::string &ads_id);
+    // Find a property using binary search
+    Property* findPropertyByCriteria(const SearchCriteria& criteria, const string& str_value, int int_value);
+
+
+    void updateVectorFromList();
 };
