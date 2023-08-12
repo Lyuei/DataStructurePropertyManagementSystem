@@ -1,6 +1,7 @@
 #include "LinkedList.hpp"
 #include "CSVReader.hpp"
 #include "Favourite.hpp"
+#include "RentRequest.hpp"
 #include <chrono>
 #include <algorithm>
 #include <vector>
@@ -511,6 +512,7 @@ void Tenant::tenantMenu(User *loggedInUser)
     readProperties(propertyList);
     FavouritePropertyLinkedList favouriteList;
     FavouriteProperty newFavouriteProperty;
+    RentRequestLinkedList rentRequestList;
 
     do
     {
@@ -583,6 +585,48 @@ void Tenant::tenantMenu(User *loggedInUser)
         }
         else if (choice == "4")
         {
+            cout << "Your favorite properties:" << endl;
+
+            // Display favorite properties associated with the logged-in tenant's userId
+            favouriteList.displayForUser(this->getUserId());
+
+            int selectedPropertyIndex;
+            bool validInput = false;
+            while (!validInput)
+            {
+                cout << "Enter the index of the property you wish to request: ";
+                cin >> selectedPropertyIndex;
+
+                // Check for failed input stream (e.g., if user enters a non-numeric value)
+                if (cin.fail())
+                {
+                    cin.clear();                                                   // Clear the error flags
+                    cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // Discard invalid input
+                    cout << "Invalid input. Please enter a valid index number." << endl;
+                    continue;
+                }
+
+                // Validate the selected property index.
+                if (favouriteList.propertyAtIndexExists(selectedPropertyIndex))
+                {
+                    validInput = true; // Exit the loop
+                }
+                else
+                {
+                    cout << "Invalid property index. Make sure you select a property from your favorite list." << endl;
+                }
+            }
+
+            RentRequest newRequest;
+            newRequest.userId = this->getUserId();
+
+            // Get the adsId of the selected property.
+            newRequest.adsId = favouriteList.getAdsIdAtIndex(selectedPropertyIndex);
+
+            newRequest.status = RentRequestStatus::PENDING;
+
+            rentRequestList.insert(newRequest); // Add the request to the rent request list
+            cout << "Rent request placed successfully!" << endl;
         }
         else if (choice == "5")
         {
