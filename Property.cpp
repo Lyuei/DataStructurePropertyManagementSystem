@@ -55,28 +55,6 @@ void PropertyLinkedList::insertAtEnd(Property *data)
     }
 }
 
-// void PropertyLinkedList::insert(Property *newProperty)
-// {
-//     if (!newProperty)
-//         return; // Null check
-
-//     if (head == nullptr)
-//     {
-//         // If the list is empty, simply set the head to the new property
-//         head = newProperty;
-//     }
-//     else
-//     {
-//         // If the list is not empty, traverse to the end and add the new property
-//         Property *current = head;
-//         while (current->next != nullptr)
-//         {
-//             current = current->next;
-//         }
-//         current->next = newProperty;
-//     }
-// }
-
 void PropertyLinkedList::display(int numRows) const
 {
     Property *current = head;
@@ -392,4 +370,19 @@ PropertyLinkedList PropertyLinkedList::filter(const FilterCriteria &criteria) co
     }
 
     return filteredList;
+}
+
+// Function to check if a given ads_id is present in the linked list
+bool PropertyLinkedList::adsIdExists(const std::string &ads_id) const
+{
+    Property *current = head;
+    while (current)
+    {
+        if (current->ads_id == ads_id)
+        {
+            return true;
+        }
+        current = current->next;
+    }
+    return false;
 }

@@ -26,9 +26,13 @@ User *login(const string &username, const string &password, LinkedList &adminLis
     user = tenantList.login(username, password);
     if (user != NULL)
     {
-        cout << "Saddle up for the wild ride through the world of renting – where the walls have stories, and the carpet has seen things. Welcome, \n"
+        cout << "Welcome to your digital abode, seeker of dwellings! Hello, \n"
              << user->username << "!\n";
-        tenant.tenantMenu();
+        Tenant *loggedInTenant = dynamic_cast<Tenant *>(user);
+        if (loggedInTenant)
+        {
+            loggedInTenant->tenantMenu(user);  // Pass the logged-in tenant user to the tenantMenu
+        }
         return user;
     }
 
@@ -142,7 +146,7 @@ int main()
     managerList.insert(newManager1);
 
     LinkedList tenantList;
-    Tenant *newTenant = new Tenant("11", "tenant", "tenant", "yuwei", 21, {0, 0, 0, 1, 0, 100});
+    Tenant *newTenant = new Tenant("101", "tenant", "tenant", "yuwei", 21, {0, 0, 0, 1, 0, 100});
     tenantList.insert(newTenant);
 
     // Get username and password from user

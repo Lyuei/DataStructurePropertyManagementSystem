@@ -1,5 +1,6 @@
 #include "LinkedList.hpp"
 #include "CSVReader.hpp"
+#include "Favourite.hpp"
 #include <chrono>
 #include <algorithm>
 #include <vector>
@@ -502,12 +503,14 @@ void Tenant::display() const
          << ", Last Login: " << (lastLogin.tm_year + 1900) << "-" << (lastLogin.tm_mon + 1) << "-" << lastLogin.tm_mday << "\n";
 }
 
-void Tenant::tenantMenu()
+void Tenant::tenantMenu(User *loggedInUser)
 {
     string choice;
     int numRows;
     PropertyLinkedList propertyList;
     readProperties(propertyList);
+    FavouritePropertyLinkedList favouriteList;
+    FavouriteProperty newFavouriteProperty;
 
     do
     {
@@ -536,8 +539,8 @@ void Tenant::tenantMenu()
             switch (sortChoice)
             {
             case 1:
-                // propertyList.mergeSortByCriterion(SortCriteria::MonthlyRent);
-                propertyList.quickSortByCriterion(SortCriteria::MonthlyRent);
+                propertyList.mergeSortByCriterion(SortCriteria::MonthlyRent);
+                // propertyList.quickSortByCriterion(SortCriteria::MonthlyRent);
                 break;
             case 2:
                 propertyList.mergeSortByCriterion(SortCriteria::Location);
@@ -564,6 +567,19 @@ void Tenant::tenantMenu()
         }
         else if (choice == "3")
         {
+            string adsId;
+            cout << "Enter Favourite Property Listing Id: ";
+            cin >> adsId;
+            if (!propertyList.adsIdExists(adsId))
+            {
+                cout << "No such property listing exist!";
+            }
+            else
+            {
+                newFavouriteProperty.ads_id = adsId;
+                newFavouriteProperty.userId = this->getUserId(); // Using the getUserId() function of the Tenant class
+                favouriteList.insert(newFavouriteProperty);
+            }
         }
         else if (choice == "4")
         {

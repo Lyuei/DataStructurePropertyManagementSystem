@@ -62,5 +62,5 @@ public:
     tm lastLogin;
     Tenant(string userId, string username, string password, string name, int age, tm lastLogin);
     void display() const override;
-    void tenantMenu();
+    void tenantMenu(User* loggedInUser);
 };

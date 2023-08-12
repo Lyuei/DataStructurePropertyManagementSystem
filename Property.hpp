@@ -83,4 +83,5 @@ public:
     void mergeSortByCriterion(SortCriteria criterion);
     void quickSortByCriterion(SortCriteria criterion);
     PropertyLinkedList filter(const FilterCriteria &criteria) const;
+    bool adsIdExists(const std::string &ads_id) const;
 };
