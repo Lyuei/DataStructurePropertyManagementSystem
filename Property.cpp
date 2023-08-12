@@ -67,18 +67,6 @@ void PropertyLinkedList::display(int numRows) const
     }
 }
 
-PropertyLinkedList::~PropertyLinkedList()
-{
-    // Implement the destructor to free the memory used by the linked list nodes
-    Property *current = head;
-    while (current != nullptr)
-    {
-        Property *next = current->next;
-        delete current;
-        current = next;
-    }
-}
-
 Property *merge_sorted_lists_enum(Property *left, Property *right, SortCriteria criterion)
 {
     // Create a dummy node to hold the merged list
@@ -144,7 +132,7 @@ Property *merge_sorted_lists_enum(Property *left, Property *right, SortCriteria 
 pair<Property *, Property *> split_linked_list(Property *head)
 {
     if (!head || !head->next)
-        return {head, nullptr};
+        return pair<Property *, Property *>{head, nullptr};
 
     Property *slow = head, *fast = head, *prev = nullptr;
     while (fast && fast->next)
@@ -157,7 +145,7 @@ pair<Property *, Property *> split_linked_list(Property *head)
     if (prev)
         prev->next = nullptr;
 
-    return {head, slow};
+    return pair<Property *, Property *>{head, slow};
 }
 
 Property *merge_sort_linked_list(Property *head, SortCriteria criterion)
@@ -322,7 +310,6 @@ Property *PropertyLinkedList::linearSearch(const string &criterion)
     return nullptr; // Property not found
 }
 
-
 // filterProperties function
 PropertyLinkedList PropertyLinkedList::filter(const FilterCriteria &criteria) const
 {
@@ -399,4 +386,23 @@ bool PropertyLinkedList::adsIdExists(const std::string &ads_id) const
         current = current->next;
     }
     return false;
+}
+
+bool PropertyLinkedList::compareAdsId(Property* a, Property* b)
+{
+    return a->ads_id < b->ads_id;
+}
+
+Property* PropertyLinkedList::findProperty(const std::string& ads_id)
+{
+    // Ensure the vector is sorted before performing binary search
+    std::sort(properties.begin(), properties.end(), compareAdsId);
+
+    auto it = std::lower_bound(properties.begin(), properties.end(), ads_id, 
+        [](Property* prop, const std::string& ads_id) { return prop->ads_id < ads_id; });
+
+    if (it != properties.end() && (*it)->ads_id == ads_id) {
+        return *it;  // Property found
+    }
+    return nullptr;  // Property not found
 }

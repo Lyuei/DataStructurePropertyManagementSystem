@@ -3,7 +3,7 @@
 
 using namespace std;
 
-User *login(const string &username, const string &password, LinkedList &adminList, LinkedList &managerList, LinkedList &tenantList, Admin &admin, Manager &manager, Tenant &tenant)
+User *login(const string &username, const string &password, LinkedList &adminList, LinkedList &managerList, LinkedList &tenantList, FavouritePropertyLinkedList &favouriteList, RentRequestLinkedList &rentRequestList,PropertyLinkedList &propertyList, Admin &admin, Manager &manager, Tenant &tenant)
 {
     User *user = adminList.login(username, password);
     if (user != NULL)
@@ -31,7 +31,7 @@ User *login(const string &username, const string &password, LinkedList &adminLis
         Tenant *loggedInTenant = dynamic_cast<Tenant *>(user);
         if (loggedInTenant)
         {
-            loggedInTenant->tenantMenu(user);  // Pass the logged-in tenant user to the tenantMenu
+            loggedInTenant->tenantMenu(user, favouriteList, rentRequestList,propertyList); // Pass the logged-in tenant user to the tenantMenu
         }
         return user;
     }
@@ -151,7 +151,11 @@ int main()
 
     // Get username and password from user
     string username, password;
-    char choice;
+    string choice;
+    PropertyLinkedList propertyList;
+    readProperties(propertyList);
+    FavouritePropertyLinkedList favouriteList;    
+    RentRequestLinkedList rentRequestList;
     do
     {
         cout << "\nStep right into the property management circus..." << endl;
@@ -160,22 +164,17 @@ int main()
         cout << "Enter your choice: ";
         cin >> choice;
 
-        if (choice == '1') // Login
+        if (choice == "1") // Login
         {
             cout << "Enter username: ";
             cin >> username;
             cout << "Enter password: ";
             cin >> password;
 
-            // Try to login
-            User *user = login(username, password, adminList, managerList, tenantList, admin, manager, tenant);
-            if (user)
-            {
-                // Successful login. Exit the loop or continue with other operations.
-                break;
-            }
+            // Login
+            User *user = login(username, password, adminList, managerList, tenantList, favouriteList, rentRequestList, propertyList, admin, manager, tenant);
         }
-        else if (choice == '2') // Register as Tenant
+        else if (choice == "2") // Register as Tenant
         {
             Tenant *newTenant = registerTenant(tenantList);
             if (newTenant)

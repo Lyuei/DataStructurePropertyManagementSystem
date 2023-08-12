@@ -22,14 +22,6 @@ private:
 public:
     FavouritePropertyLinkedList() : head(nullptr) {}
 
-    ~FavouritePropertyLinkedList() {
-        while (head) {
-            Node* temp = head;
-            head = head->next;
-            delete temp;
-        }
-    }
-
     void insert(const FavouriteProperty& prop) {
         Node* newNode = new Node(prop);
         if (!head) {

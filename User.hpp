@@ -2,7 +2,8 @@
 
 #include <string>
 #include "Property.hpp" // Adjust the actual header filename if needed
-
+#include "Favourite.hpp"
+#include "RentRequest.hpp"
 
 using namespace std;
 
@@ -64,6 +65,5 @@ public:
     tm lastLogin;
     Tenant(string userId, string username, string password, string name, int age, tm lastLogin);
     void display() const override;
-    void tenantMenu(User* loggedInUser);
-    void searchPropertyByDecision(PropertyLinkedList &propertyList);
+    void tenantMenu(User *loggedInUser, FavouritePropertyLinkedList &favouriteList, RentRequestLinkedList &rentRequestList,PropertyLinkedList &propertyList);
 };

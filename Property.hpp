@@ -42,8 +42,8 @@ struct FilterCriteria
 
 class Property
 {
-// private:
-//     bool isFavorite;
+    // private:
+    //     bool isFavorite;
 
 public:
     Property *next;
@@ -68,7 +68,6 @@ public:
              vector<string> additional_facilities, string region);
 
     void display() const;
-
 };
 
 class PropertyLinkedList
@@ -77,20 +76,21 @@ private:
     Property *head;
     Property *tail;
 
-    // bool isFavorite;
-
-    std::vector<Property*> properties; // Declare the properties vector
-
 public:
     PropertyLinkedList() : head(nullptr), tail(nullptr){};
-    ~PropertyLinkedList();
+    vector<Property *> properties;
 
     void insertAtEnd(Property *newProperty);
-    // void insert(Property *newProperty);
     void display(int numProperties) const;
     void mergeSortByCriterion(SortCriteria criterion);
     void quickSortByCriterion(SortCriteria criterion);
     PropertyLinkedList filter(const FilterCriteria &criteria) const;
     bool adsIdExists(const std::string &ads_id) const;
-    Property* linearSearch(const string &criterion);
+    Property *linearSearch(const string &criterion);
+
+    // Helper function for binary search on ads_id
+    static bool compareAdsId(Property *a, Property *b);
+
+    // Find a property using binary search based on ads_id
+    Property *findProperty(const std::string &ads_id);
 };

@@ -1,7 +1,5 @@
 #include "LinkedList.hpp"
 #include "CSVReader.hpp"
-#include "Favourite.hpp"
-#include "RentRequest.hpp"
 #include <chrono>
 #include <algorithm>
 #include <vector>
@@ -504,16 +502,11 @@ void Tenant::display() const
          << ", Last Login: " << (lastLogin.tm_year + 1900) << "-" << (lastLogin.tm_mon + 1) << "-" << lastLogin.tm_mday << "\n";
 }
 
-void Tenant::tenantMenu(User *loggedInUser)
+void Tenant::tenantMenu(User *loggedInUser, FavouritePropertyLinkedList &favouriteList, RentRequestLinkedList &rentRequestList, PropertyLinkedList &propertyList)
 {
     string choice;
     int numRows;
-    PropertyLinkedList propertyList;
-    readProperties(propertyList);
-    FavouritePropertyLinkedList favouriteList;
     FavouriteProperty newFavouriteProperty;
-    RentRequestLinkedList rentRequestList;
-
     do
     {
         cout << "\nTenant's Universe: \n";
@@ -566,6 +559,11 @@ void Tenant::tenantMenu(User *loggedInUser)
         }
         else if (choice == "2")
         {
+            string listingId;
+            cout << "Enter Property Listing Id: ";
+            cin >> listingId;
+
+            propertyList.findProperty(listingId);
         }
         else if (choice == "3")
         {

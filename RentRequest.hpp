@@ -35,14 +35,6 @@ public:
 
     RentRequestLinkedList() : head(nullptr) {}
 
-    ~RentRequestLinkedList() {
-        while (head) {
-            Node* temp = head;
-            head = head->next;
-            delete temp;
-        }
-    }
-
     void insert(const RentRequest& request) {
         Node* newNode = new Node(request);
         if (!head) {
