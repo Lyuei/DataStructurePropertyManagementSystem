@@ -398,7 +398,7 @@ Property *PropertyLinkedList::findPropertyByCriteria(const SearchCriteria &crite
 {
     // Define our comparison functions for string and integer
     function<bool(Property *, Property *)> comparator;
-
+    // cout << str_value;
     // Set the appropriate comparison function based on the search criteria
     switch (criteria)
     {
@@ -627,10 +627,8 @@ Property *PropertyLinkedList::findPropertyByCriteria(const SearchCriteria &crite
         }
         break;
     }
-    }
-
-    cout << "Property not found." << endl;
-    return nullptr;
+        
+    }return nullptr;
 }
 
 void PropertyLinkedList::updateVectorFromList()

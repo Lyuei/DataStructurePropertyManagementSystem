@@ -1,6 +1,5 @@
 #pragma once
 
-#include "LinkedList.hpp"
 #include "Property.hpp"
 #include <fstream>
 #include <sstream>
@@ -8,6 +7,8 @@
 #include <vector>
 #include <limits>
 
+// forward declaration
+class PropertyLinkedList;
 
 void readProperties(PropertyLinkedList &propertyList);
 

@@ -1,7 +1,7 @@
 #pragma once
 
 #include <string>
-#include "Property.hpp" // Adjust the actual header filename if needed
+#include "Property.hpp" 
 #include "Favourite.hpp"
 #include "RentRequest.hpp"
 
@@ -50,7 +50,7 @@ public:
     bool status;
     Manager(string userId, string username, string password, bool status);
     void display() const override;
-    void managerMenu();
+    void managerMenu(FavouritePropertyLinkedList &favouriteList, RentRequestLinkedList &rentRequestList, PropertyLinkedList &propertyList, LinkedList &tenantList);
     void displaySortedTenants(LinkedList &list);
     void searchTenantInfo(LinkedList &list);
     void setStatus(bool newStatus);
@@ -63,6 +63,7 @@ public:
     string name;
     int age;
     tm lastLogin;
+    string getName() const { return name; }
     Tenant(string userId, string username, string password, string name, int age, tm lastLogin);
     void display() const override;
     void tenantMenu(User *loggedInUser, FavouritePropertyLinkedList &favouriteList, RentRequestLinkedList &rentRequestList,PropertyLinkedList &propertyList);

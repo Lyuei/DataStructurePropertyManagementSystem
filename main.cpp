@@ -1,4 +1,5 @@
 #include "CSVReader.hpp"
+#include "LinkedList.hpp"
 #include <iostream>
 
 using namespace std;
@@ -19,7 +20,7 @@ User *login(const string &username, const string &password, LinkedList &adminLis
     {
         cout << "It's showtime – time to orchestrate the daily madness! Welcome, \n"
              << user->username << "!\n";
-        manager.managerMenu();
+        manager.managerMenu(favouriteList, rentRequestList,propertyList, tenantList);
         return user;
     }
 

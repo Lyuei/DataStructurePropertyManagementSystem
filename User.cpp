@@ -1,5 +1,6 @@
 #include "LinkedList.hpp"
 #include "CSVReader.hpp"
+#include "RentRequest.hpp"
 #include <chrono>
 #include <algorithm>
 #include <vector>
@@ -360,11 +361,10 @@ void Manager::displaySortedTenants(LinkedList &tenantList)
     }
 }
 
-void Manager::managerMenu()
+void Manager::managerMenu(FavouritePropertyLinkedList &favouriteList, RentRequestLinkedList &rentRequestList, PropertyLinkedList &propertyList, LinkedList &tenantList)
 {
     string choice;
     string userIdToDelete;
-    LinkedList tenantList;
     do
     {
         cout << "\nManager's Realm: \n";
@@ -405,11 +405,11 @@ void Manager::managerMenu()
         }
         else if (choice == "4")
         {
-            // Call function to generate report
+            favouriteList.summarizeTop10Properties(propertyList);
         }
         else if (choice == "5")
         {
-            // Call function to manage tenancy process
+            rentRequestList.managePendingRentRequests(propertyList);
         }
         else if (choice == "6")
         {
@@ -670,7 +670,7 @@ void Tenant::tenantMenu(User *loggedInUser, FavouritePropertyLinkedList &favouri
 
             if (!result)
             {
-                cout << "No property found with the given criteria." << endl;
+                cout << "No other property found with the given criteria." << endl;
             }
         }
         else if (choice == "3")
