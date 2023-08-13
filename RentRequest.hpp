@@ -132,11 +132,11 @@ public:
         {
             if (temp->data.status == RentRequestStatus::PENDING)
             {
+                cout << count << ". User ID: " << temp->data.userId << endl;
                 count++;
                 string input = temp->data.adsId;
                 propertyList.updateVectorFromList();
-                propertyList.binarySearch(SearchCriteria::ADS_ID, input, 0);
-                cout << count << ". User ID: " << temp->data.userId << '\n';
+                propertyList.binarySearch(SearchCriteria::ADS_ID, input, 0);                
             }
             temp = temp->next;
         }

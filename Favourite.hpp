@@ -141,9 +141,10 @@ public:
             }
             string input = pair.first;
             propertyList.updateVectorFromList();
-            propertyList.findPropertyByCriteria(SearchCriteria::ADS_ID, input, 0);
-            cout << "Ads ID: " << pair.first << ", Favorite Count: " << pair.second << endl;
+            propertyList.binarySearch(SearchCriteria::ADS_ID, input, 0);
+            cout << "Ads ID: " << pair.first << ", Favorite Count: " << pair.second << "\n" << endl;
             count++;
         }
     }
+
 };

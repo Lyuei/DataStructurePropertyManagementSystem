@@ -807,3 +807,5 @@ bool Tenant::isStringCriteria(SearchCriteria criteria)
         return false;
     }
 }
+
+

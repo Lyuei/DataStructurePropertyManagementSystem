@@ -345,6 +345,7 @@ Property *PropertyLinkedList::linearSearch(const SearchCriteria &criteria, const
 
         if (match)
         {
+            current->display();
             return current;
         }
 
@@ -417,6 +418,7 @@ PropertyLinkedList PropertyLinkedList::filter(const FilterCriteria &criteria) co
 
     return filteredList;
 }
+
 // Function to check if a given ads_id is present in the linked list
 bool PropertyLinkedList::adsIdExists(const std::string &ads_id) const
 {
