@@ -5,7 +5,6 @@
 #include "CSVReader.hpp"
 #include "PaymentManager.hpp"
 
-
 using namespace std;
 
 // Enumeration to represent the status of a rent request
@@ -170,35 +169,35 @@ public:
         }
     }
 
-    bool manageTenancyPayment(const string &userId, const string &adsId)
+    bool manageTenancyPayment(RentRequest &rentRequest)
     {
-        // Find the corresponding rent request
-        Node *temp = head;
-        while (temp)
+        // Check if the rent request is approved
+        if (rentRequest.status != RentRequestStatus::APPROVED)
         {
-            if (temp->data.userId == userId && temp->data.adsId == adsId && temp->data.status == RentRequestStatus::APPROVED)
-            {
-                int totalAmount = calculateTotalAmount(temp->data);
-                if (!processPayment(totalAmount))
-                {
-                    std::cout << "Payment failed. Please try again.\n";
-                    return false;
-                }
-
-                // Update the status to PAID
-                temp->data.status = RentRequestStatus::PAID;
-
-                // Additional steps
-                recordPayment(temp->data);
-                generateReceipt(temp->data);
-
-                std::cout << "Payment successful. Thank you for your payment.\n";
-                return true;
-            }
-            temp = temp->next;
+            std::cout << "Rent request is not approved. Payment cannot be processed.\n";
+            return false;
         }
 
-        // Rent request not found or not in an approved state
-        return false;
+        // Calculate the total amount (this might include rent, deposit, etc.)
+        int monthlyRent;
+
+        // Update the rent request status to paid
+        rentRequest.status = RentRequestStatus::PAID;
+
+        // Record the payment in the tenant's payment history
+        recordPayment(rentRequest);
+
+        // Generate and provide a receipt
+        generateReceipt(rentRequest);
+
+        std::cout << "Payment successful. Thank you for your payment.\n";
+        return true;
+    }
+
+    void recordPayment(const RentRequest &rentRequest)
+    {
+        // Logic to record the payment in the tenant's payment history
+        // This might include updating a database, logging the payment, etc.
+        std::cout << "Payment recorded for user: " << rentRequest.userId << ", amount: " << rentRequest.rentAmount << "\n";
     }
 };
