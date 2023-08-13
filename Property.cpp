@@ -300,6 +300,9 @@ void PropertyLinkedList::quickSortByCriterion(SortCriteria criterion)
 Property *PropertyLinkedList::linearSearch(const SearchCriteria &criteria, const string &str_value, int int_value)
 {
     Property *current = head;
+    auto start = chrono::high_resolution_clock::now();
+    bool foundMatch = false;
+
     while (current != nullptr)
     {
         bool match = false;
@@ -346,11 +349,15 @@ Property *PropertyLinkedList::linearSearch(const SearchCriteria &criteria, const
         if (match)
         {
             current->display();
-            return current;
+            foundMatch = true;
         }
 
         current = current->next;
     }
+
+    auto stop = chrono::high_resolution_clock::now();
+    auto duration = chrono::duration_cast<chrono::microseconds>(stop - start);
+    cout << "Time taken by Linear Search: " << duration.count() / 1000000.0 << " seconds" << endl;
 
     return nullptr; // Property not found
 }
@@ -415,7 +422,6 @@ PropertyLinkedList PropertyLinkedList::filter(const FilterCriteria &criteria) co
         }
         current = current->next;
     }
-
     return filteredList;
 }
 
@@ -441,6 +447,7 @@ bool PropertyLinkedList::compareAdsId(Property *a, Property *b)
 
 Property *PropertyLinkedList::binarySearch(const SearchCriteria &criteria, const string &str_value, int int_value)
 {
+    auto start = chrono::high_resolution_clock::now();
     // Define our comparison functions for string and integer
     function<bool(Property *, Property *)> comparator;
     // cout << str_value;
@@ -672,8 +679,12 @@ Property *PropertyLinkedList::binarySearch(const SearchCriteria &criteria, const
         }
         break;
     }
-        
-    }return nullptr;
+    }
+    
+    auto stop = chrono::high_resolution_clock::now();
+    auto duration = chrono::duration_cast<chrono::microseconds>(stop - start);
+    cout << "Time taken by Binary Search: " << duration.count() / 1000000.0 << " seconds" << endl;
+    return nullptr;
 }
 
 void PropertyLinkedList::updateVectorFromList()
@@ -687,12 +698,15 @@ void PropertyLinkedList::updateVectorFromList()
     }
 }
 
-int PropertyLinkedList::getMonthlyRentByAdsId(const string &adsId) const {
+int PropertyLinkedList::getMonthlyRentByAdsId(const string &adsId) const
+{
     Property *temp = head;
 
     // Traverse the linked list and search for the property with the given ads_id
-    while (temp) {
-        if (temp->ads_id == adsId) {
+    while (temp)
+    {
+        if (temp->ads_id == adsId)
+        {
             return temp->monthly_rent; // Return the monthly rent if the property is found
         }
         temp = temp->next;
