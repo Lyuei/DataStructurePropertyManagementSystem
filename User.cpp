@@ -413,7 +413,7 @@ void Manager::managerMenu(FavouritePropertyLinkedList &favouriteList, RentReques
         }
         else if (choice == "6")
         {
-            // Call function to manage payment
+            rentRequestList.manageTenancyPayment();
         }
         else if (choice == "7")
         {
@@ -524,7 +524,7 @@ void Tenant::tenantMenu(User *loggedInUser, FavouritePropertyLinkedList &favouri
 
         if (choice == "1")
         {
-            int sortChoice;
+            int sortChoice, algoChoice;
             cout << "Choose a sorting criterion:" << endl;
             cout << "1. Monthly Rent" << endl;
             cout << "2. Location" << endl;
@@ -532,19 +532,31 @@ void Tenant::tenantMenu(User *loggedInUser, FavouritePropertyLinkedList &favouri
             cout << "Enter your choice (1/2/3): ";
             cin >> sortChoice;
 
+            cout << "Choose a sorting algorithm:" << endl;
+            cout << "1. Merge Sort" << endl;
+            cout << "2. Quick Sort" << endl;
+            cout << "Enter your choice (1/2): ";
+            cin >> algoChoice;
+
             switch (sortChoice)
             {
             case 1:
-                propertyList.mergeSortByCriterion(SortCriteria::MonthlyRent);
-                // propertyList.quickSortByCriterion(SortCriteria::MonthlyRent);
+                if (algoChoice == 1)
+                    propertyList.mergeSortByCriterion(SortCriteria::MonthlyRent);
+                else
+                    propertyList.quickSortByCriterion(SortCriteria::MonthlyRent);
                 break;
             case 2:
-                propertyList.mergeSortByCriterion(SortCriteria::Location);
-                // propertyList.quickSortByCriterion(SortCriteria::Location);
+                if (algoChoice == 1)
+                    propertyList.mergeSortByCriterion(SortCriteria::Location);
+                else
+                    propertyList.quickSortByCriterion(SortCriteria::Location);
                 break;
             case 3:
-                propertyList.mergeSortByCriterion(SortCriteria::Size);
-                // propertyList.quickSortByCriterion(SortCriteria::Size);
+                if (algoChoice == 1)
+                    propertyList.mergeSortByCriterion(SortCriteria::Size);
+                else
+                    propertyList.quickSortByCriterion(SortCriteria::Size);
                 break;
             default:
                 cout << "Invalid choice." << endl;
@@ -561,7 +573,7 @@ void Tenant::tenantMenu(User *loggedInUser, FavouritePropertyLinkedList &favouri
         else if (choice == "2")
         {
             // Display menu and get user's choice
-            int choice;
+            int choice, searchAlgorithm;
             cout << "Choose the criteria for property search:" << endl;
             cout << "1. Ads ID" << endl;
             cout << "2. Property Name" << endl;
@@ -578,7 +590,13 @@ void Tenant::tenantMenu(User *loggedInUser, FavouritePropertyLinkedList &favouri
             cout << "Enter your choice: ";
             cin >> choice;
 
-            // Now, based on the choice, prompt the user for the required input
+            cout << "Choose a search algorithm:" << endl;
+            cout << "1. Linear Search" << endl;
+            cout << "2. Binary Search" << endl; // Or any other search algorithm you want to include
+            cout << "Enter your choice (1/2): ";
+            cin >> searchAlgorithm;
+
+            // prompt the user for the required input
             SearchCriteria criteria;
             string str_value;
             int int_value;
@@ -659,13 +677,31 @@ void Tenant::tenantMenu(User *loggedInUser, FavouritePropertyLinkedList &favouri
             propertyList.updateVectorFromList();
             Property *result;
 
-            if (isStringCriteria(criteria))
+            switch (searchAlgorithm)
             {
-                result = propertyList.findPropertyByCriteria(criteria, str_value, 0);
-            }
-            else
-            {
-                result = propertyList.findPropertyByCriteria(criteria, "", int_value);
+            case 1:
+                if (isStringCriteria(criteria))
+                {
+                    result = propertyList.linearSearch(criteria, str_value, 0);
+                }
+                else
+                {
+                    result = propertyList.linearSearch(criteria, "", int_value);
+                }
+                break;
+            case 2:
+                if (isStringCriteria(criteria))
+                {
+                    result = propertyList.binarySearch(criteria, str_value, 0);
+                }
+                else
+                {
+                    result = propertyList.binarySearch(criteria, "", int_value);
+                }
+                break;
+            default:
+                cout << "Invalid search algorithm choice!" << endl;
+                return;
             }
 
             if (!result)
@@ -732,6 +768,8 @@ void Tenant::tenantMenu(User *loggedInUser, FavouritePropertyLinkedList &favouri
 
                 // Get the adsId of the selected property.
                 newRequest.adsId = favouriteList.getAdsIdAtIndex(selectedPropertyIndex);
+
+                newRequest.rentAmount = propertyList.getMonthlyRentByAdsId(newRequest.adsId);
 
                 newRequest.status = RentRequestStatus::PENDING;
 

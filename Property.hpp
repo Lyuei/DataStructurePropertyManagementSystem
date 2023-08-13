@@ -13,14 +13,15 @@ enum class SortCriteria
     Size
 };
 
-enum class SearchCriteria {
+enum class SearchCriteria
+{
     ADS_ID,
     PROP_NAME,
     LOCATION,
     PROPERTY_TYPE,
     FURNISHED,
     REGION,
-    LAST_STRING_FIELD,  // this is a marker
+    LAST_STRING_FIELD, // this is a marker
     COMPLETION_YEAR,
     MONTHLY_RENT,
     ROOMS,
@@ -102,14 +103,15 @@ public:
     void quickSortByCriterion(SortCriteria criterion);
     PropertyLinkedList filter(const FilterCriteria &criteria) const;
     bool adsIdExists(const std::string &ads_id) const;
-    Property *linearSearch(const string &criterion);
 
     // Helper function for binary search on ads_id
     static bool compareAdsId(Property *a, Property *b);
 
+    Property *linearSearch(const SearchCriteria &criteria, const string &str_value, int int_value);
+
     // Find a property using binary search
-    Property* findPropertyByCriteria(const SearchCriteria& criteria, const string& str_value, int int_value);
+    Property *binarySearch(const SearchCriteria &criteria, const string &str_value, int int_value);
 
-
+    int getMonthlyRentByAdsId(const string &adsId) const;
     void updateVectorFromList();
 };

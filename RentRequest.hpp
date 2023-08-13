@@ -3,7 +3,6 @@
 #include <string>
 #include <iostream>
 #include "CSVReader.hpp"
-#include "PaymentManager.hpp"
 
 using namespace std;
 
@@ -21,13 +20,13 @@ class RentRequest
 public:
     string userId;
     string adsId;
+    int rentAmount;
     RentRequestStatus status;
-    PaymentManager paymentManager;
 
     // Constructors
     RentRequest() : status(RentRequestStatus::PENDING) {}
-    RentRequest(const string &userId, const string &adsId)
-        : userId(userId), adsId(adsId), status(RentRequestStatus::PENDING) {}
+    RentRequest(const string &userId, const string &adsId, int rentAmount)
+        : userId(userId), adsId(adsId), rentAmount(rentAmount), status(RentRequestStatus::PENDING) {}
 };
 
 class RentRequestLinkedList
@@ -63,6 +62,28 @@ public:
         }
     }
 
+    void displayOnlyPaidRentRequests() const
+    {
+        Node *temp = head;
+        bool found = false; // Flag to check if any rent request with PAID status is found
+
+        while (temp)
+        {
+            if (temp->data.status == RentRequestStatus::PAID) // Check if the status is PAID
+            {
+                found = true;
+                cout << "User ID: " << temp->data.userId << ", Ads ID: " << temp->data.adsId << ", Monthly Rent: " << temp->data.rentAmount << ", Status: Paid" << endl;
+            }
+
+            temp = temp->next;
+        }
+
+        if (!found)
+        {
+            cout << "No paid renting requests found." << endl;
+        }
+    }
+
     void displayUserRentHistory(const string &userId) const
     {
         Node *temp = head;
@@ -84,6 +105,9 @@ public:
                     break;
                 case RentRequestStatus::DECLINED:
                     cout << "Declined";
+                    break;
+                case RentRequestStatus::PAID:
+                    cout << "Paid";
                     break;
                 }
                 cout << endl;
@@ -111,7 +135,7 @@ public:
                 count++;
                 string input = temp->data.adsId;
                 propertyList.updateVectorFromList();
-                propertyList.findPropertyByCriteria(SearchCriteria::ADS_ID, input, 0);
+                propertyList.binarySearch(SearchCriteria::ADS_ID, input, 0);
                 cout << count << ". User ID: " << temp->data.userId << '\n';
             }
             temp = temp->next;
@@ -169,35 +193,57 @@ public:
         }
     }
 
-    bool manageTenancyPayment(RentRequest &rentRequest)
+    void manageTenancyPayment()
     {
-        // Check if the rent request is approved
-        if (rentRequest.status != RentRequestStatus::APPROVED)
+        Node *temp = head;
+        int count = 0;
+
+        // List all approved requests
+        cout << "Approved Rent Requests:\n";
+        while (temp)
         {
-            std::cout << "Rent request is not approved. Payment cannot be processed.\n";
-            return false;
+            if (temp->data.status == RentRequestStatus::APPROVED)
+            {
+                count++;
+                cout << count << ". User ID: " << temp->data.userId << ", Ads ID: " << temp->data.adsId << ", Rent Amount: " << temp->data.rentAmount << '\n';
+            }
+            temp = temp->next;
         }
 
-        // Calculate the total amount (this might include rent, deposit, etc.)
-        int monthlyRent;
+        if (count == 0)
+        {
+            cout << "No approved rent requests at this time.\n";
+            return;
+        }
 
-        // Update the rent request status to paid
-        rentRequest.status = RentRequestStatus::PAID;
+        // Ask the manager to choose a request to review
+        int choice;
+        cout << "Enter the number of the request to manage payment, or 0 to exit: ";
+        cin >> choice;
 
-        // Record the payment in the tenant's payment history
-        recordPayment(rentRequest);
+        if (choice <= 0 || choice > count)
+        {
+            cout << "Invalid choice. Exiting.\n";
+            return;
+        }
 
-        // Generate and provide a receipt
-        generateReceipt(rentRequest);
+        // Find the selected request
+        temp = head;
+        int current = 0;
+        while (temp)
+        {
+            if (temp->data.status == RentRequestStatus::APPROVED)
+            {
+                current++;
+                if (current == choice)
+                    break;
+            }
+            temp = temp->next;
+        }
 
-        std::cout << "Payment successful. Thank you for your payment.\n";
-        return true;
-    }
-
-    void recordPayment(const RentRequest &rentRequest)
-    {
-        // Logic to record the payment in the tenant's payment history
-        // This might include updating a database, logging the payment, etc.
-        std::cout << "Payment recorded for user: " << rentRequest.userId << ", amount: " << rentRequest.rentAmount << "\n";
+        // Update the rent request status to PAID
+        temp->data.status = RentRequestStatus::PAID;
+        cout << "Payment recorded for user: " << temp->data.userId << ", amount: " << temp->data.rentAmount << "\n";
+        cout << "Payment successful. Thank you for your payment.\n";
     }
 };
